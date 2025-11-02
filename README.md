@@ -26,7 +26,7 @@ This repository provides the **formal scaffolding**: cardinal bookkeeping, first
 For each countable ordinal $n<\omega_1$ there exists a subset $R[\!\le n]\subseteq\mathbb R$ and a cardinal $\kappa_n$ with
 
 $$
-\aleph_0 < \kappa_n < 2^{\aleph_0} \quad\text{and}\quad \# R[\!\le n] = \kappa_n,
+\aleph_0 < \kappa_n < 2^{\aleph_0} \quad\text{and}\quad \sharp R[\!\le n] = \kappa_n,
 $$
 
 such that:
@@ -41,7 +41,7 @@ such that:
 
 2. (**Elementary chain**) For $m\le n$ we have an elementary embedding $F_m \preceq F_n$ (language of ordered rings). Hence $\bigcup_{n<\omega_1}F_n \preceq \mathbb R$ and is elementarily equivalent to $\mathbb R$.
 
-3. (**Limit size**) The colimit field $F_\omega:=\bigcup_{n<\omega_1}F_n$ has $\#F_\omega = 2^{\aleph_0}$.
+3. (**Limit size**) The colimit field $F_\omega:=\bigcup_{n<\omega_1}F_n$ has $\sharp F_\omega = 2^{\aleph_0}$.
 
 4. (**Physical proxy; optional**) There exist natural systems with configuration‑space Hausdorff dimensions satisfying $\dim_H\mathcal C_n=\log_2\kappa_n$.
 
