@@ -7,11 +7,13 @@
 
 ## 0) Elevator pitch
 
-ICAH proposes that the classical continuum can be approached via a transfinite ladder of **definability strata** \(\{R[\!\le n]\}_{n<\omega_1}\subseteq\mathbb R\) with associated sizes \(\kappa_n\) satisfying
-\[
+ICAH proposes that the classical continuum can be approached via a transfinite ladder of **definability strata** $\{R[\!\le n]\}_{n<\omega_1}\subseteq\mathbb R$ with associated sizes $\kappa_n$ satisfying
+
+$$
 \aleph_0 \;<\; \kappa_n \;<\; 2^{\aleph_0},
-\]
-and that each stratum supports a real‑closed field \(F_n\) whose field operations are first‑order definable *within the same stratum*. The directed union \(\bigcup_{n<\omega_1} F_n\) is conjectured to be **elementarily equivalent** to \((\mathbb R,+,\cdot,<)\); the limit field \(F_\omega\) has cardinality \(2^{\aleph_0}\). Optional: certain physical configuration spaces (quasicrystals, fracton phases) exhibit Hausdorff dimensions matching \(\log_2\kappa_n\) (testable proxy).
+$$
+
+and that each stratum supports a real‑closed field $F_n$ whose field operations are first‑order definable *within the same stratum*. The directed union $\bigcup_{n<\omega_1} F_n$ is conjectured to be **elementarily equivalent** to $(\mathbb R,+,\cdot,<)$; the limit field $F_\omega$ has cardinality $2^{\aleph_0}$. Optional: certain physical configuration spaces (quasicrystals, fracton phases) exhibit Hausdorff dimensions matching $\log_2\kappa_n$ (testable proxy).
 
 This repository provides the **formal scaffolding**: cardinal bookkeeping, first‑order definability interfaces, and an elementary‑chain architecture in Lean 4.
 
@@ -21,32 +23,36 @@ This repository provides the **formal scaffolding**: cardinal bookkeeping, first
 
 ### 1.1 Hypothesis (working formal statement)
 
-For each countable ordinal \(n<\omega_1\) there exists a subset \(R[\!\le n]\subseteq\mathbb R\) and a cardinal \(\kappa_n\) with
-\[
+For each countable ordinal $n<\omega_1$ there exists a subset $R[\!\le n]\subseteq\mathbb R$ and a cardinal $\kappa_n$ with
+
+$$
 \aleph_0 < \kappa_n < 2^{\aleph_0} \quad\text{and}\quad \# R[\!\le n] = \kappa_n,
-\]
+$$
+
 such that:
 
 1. (**Internal arithmetic**) There is a real‑closed field structure
-   \[
+   
+   $$
    F_n = \big(R[\!\le n],+_n,\cdot_n,<_{n}\big)
-   \]
-   and the graphs of \(+_n,\cdot_n\) and the order are **first‑order definable** in the language of ordered rings *with parameters from the same stratum*.
+   $$
+   
+   and the graphs of $+_n,\cdot_n$ and the order are **first‑order definable** in the language of ordered rings *with parameters from the same stratum*.
 
-2. (**Elementary chain**) For \(m\le n\) we have an elementary embedding \(F_m \preceq F_n\) (language of ordered rings). Hence \(\bigcup_{n<\omega_1}F_n \preceq \mathbb R\) and is elementarily equivalent to \(\mathbb R\).
+2. (**Elementary chain**) For $m\le n$ we have an elementary embedding $F_m \preceq F_n$ (language of ordered rings). Hence $\bigcup_{n<\omega_1}F_n \preceq \mathbb R$ and is elementarily equivalent to $\mathbb R$.
 
-3. (**Limit size**) The colimit field \(F_\omega:=\bigcup_{n<\omega_1}F_n\) has \(\#F_\omega = 2^{\aleph_0}\).
+3. (**Limit size**) The colimit field $F_\omega:=\bigcup_{n<\omega_1}F_n$ has $\#F_\omega = 2^{\aleph_0}$.
 
-4. (**Physical proxy; optional**) There exist natural systems with configuration‑space Hausdorff dimensions satisfying \(\dim_H\mathcal C_n=\log_2\kappa_n\).
+4. (**Physical proxy; optional**) There exist natural systems with configuration‑space Hausdorff dimensions satisfying $\dim_H\mathcal C_n=\log_2\kappa_n$.
 
-> **Consistency note.** Items (1)–(3) are to be developed relative to ZFC plus additional assumptions (e.g. \(\neg\)CH or a definability‑driven framework). When CH holds, no classical cardinal strictly between \(\aleph_0\) and \(2^{\aleph_0}\) exists; formalisation can then treat “size” as a *definability rank* invariant while retaining the algebraic/model‑theoretic content.
+> **Consistency note.** Items (1)–(3) are to be developed relative to ZFC plus additional assumptions (e.g. $\neg$CH or a definability‑driven framework). When CH holds, no classical cardinal strictly between $\aleph_0$ and $2^{\aleph_0}$ exists; formalisation can then treat "size" as a *definability rank* invariant while retaining the algebraic/model‑theoretic content.
 
 ### 1.2 Definability viewpoint
 
-We work in the language \(\mathcal L_{\mathrm{or}}=\{0,1,+,\cdot,<\}\). A subset \(S\subseteq \mathbb R^k\) is **definable inside a structure** \(M\models \mathrm{Th}(\mathbb R\text{CF})\) if it is the interpretation of an \(\mathcal L_{\mathrm{or}}\)-formula with parameters from \(M\). The slogan for ICAH is:
+We work in the language $\mathcal L_{\mathrm{or}}=\{0,1,+,\cdot,<\}$. A subset $S\subseteq \mathbb R^k$ is **definable inside a structure** $M\models \mathrm{Th}(\mathbb R\text{CF})$ if it is the interpretation of an $\mathcal L_{\mathrm{or}}$-formula with parameters from $M$. The slogan for ICAH is:
 
-- **Arithmetic that remembers its layer**: the graphs of \(+_n,\cdot_n\) are definable over \(F_n\) and compatible with the inclusion \(F_n\hookrightarrow \mathbb R\).
-- **Elementary chain principle**: \((F_n)_{n<\omega_1}\) is an elementary, directed system; Tarski–Seidenberg (quantifier elimination for real‑closed fields) is the main engine for preservation of definability.
+- **Arithmetic that remembers its layer**: the graphs of $+_n,\cdot_n$ are definable over $F_n$ and compatible with the inclusion $F_n\hookrightarrow \mathbb R$.
+- **Elementary chain principle**: $(F_n)_{n<\omega_1}$ is an elementary, directed system; Tarski–Seidenberg (quantifier elimination for real‑closed fields) is the main engine for preservation of definability.
 
 ---
 
@@ -107,14 +113,14 @@ with a construction:
 - Prove `F_ω ≺ ℝ` (union of an elementary chain is elementary) ⇒ elementarily equivalent to ℝ.
 - Cardinal accounting with `Cardinal`:
   - Show `#⟪F_n⟫ = R.κ` for each `n`.
-  - Supply a hypothesis ensuring `#⟪F_ω⟫ = 2^{aleph0}`.
+  - Supply a hypothesis ensuring `#⟪F_ω⟫ = 2^aleph0`.
 
 ### 2.5 Optional physics interface (non‑blocking)
 
 Create `ICAH/Physics.lean`:
 
 - Abstract class `ConfigSpace` with a boxed definition `HausdorffDim : Set (ℝ^m) → EReal`.
-- Axiomatise (for now) existence of models with \(\dim_H = \log_2\kappa_n\). This remains a placeholder until you connect to concrete math.
+- Axiomatise (for now) existence of models with $\dim_H = \log_2\kappa_n$. This remains a placeholder until you connect to concrete math.
 
 ---
 
@@ -191,8 +197,8 @@ Open `ICAH/Prelude.lean` to confirm the environment is healthy.
 ## 6) Assumptions and regimes
 
 - **Set‑theoretic backdrop.**  
-  The “intermediate size” clause uses classical cardinality. It is **consistent** with ZFC when \(\neg\)CH holds (e.g., \(2^{\aleph_0}=\aleph_2\) or larger).  
-  If you want to work *without* assuming \(\neg\)CH, reinterpret “size” as a **definability rank** invariant; most algebra/model‑theory goals still make sense.
+  The "intermediate size" clause uses classical cardinality. It is **consistent** with ZFC when $\neg$CH holds (e.g., $2^{\aleph_0}=\aleph_2$ or larger).  
+  If you want to work *without* assuming $\neg$CH, reinterpret "size" as a **definability rank** invariant; most algebra/model‑theory goals still make sense.
 
 - **Definability vs absoluteness.**  
   When you later study forcing robustness, rely on standard absoluteness for Borel/analytic sets and c.c.c. forcing to keep the strata stable (to be formalised).
@@ -210,11 +216,11 @@ Open `ICAH/Prelude.lean` to confirm the environment is healthy.
 
 ## 8) FAQ
 
-**Q: Doesn’t CH forbid intermediate sizes?**  
-Only if CH holds. In ZFC, \(\neg\)CH is consistent and yields many cardinals between \(\aleph_0\) and \(2^{\aleph_0}\). ICAH can be developed relative to such universes; alternatively, you can phrase the hierarchy via definability ranks.
+**Q: Doesn't CH forbid intermediate sizes?**  
+Only if CH holds. In ZFC, $\neg$CH is consistent and yields many cardinals between $\aleph_0$ and $2^{\aleph_0}$. ICAH can be developed relative to such universes; alternatively, you can phrase the hierarchy via definability ranks.
 
 **Q: Why real‑closed fields?**  
-Because \((\mathbb R,+,\cdot,<)\) admits quantifier elimination (Tarski–Seidenberg). Definability is stable under algebraic constructions, enabling elementary embeddings.
+Because $(\mathbb R,+,\cdot,<)$ admits quantifier elimination (Tarski–Seidenberg). Definability is stable under algebraic constructions, enabling elementary embeddings.
 
 **Q: Is the physics part necessary?**  
 No. It’s an optional conjectural bridge; the formal core is purely set‑theoretic and model‑theoretic.
