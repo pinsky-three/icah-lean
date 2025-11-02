@@ -10,7 +10,7 @@
 ICAH proposes that the classical continuum can be approached via a transfinite ladder of **definability strata** $\{R[\!\le n]\}_{n<\omega_1}\subseteq\mathbb R$ with associated sizes $\kappa_n$ satisfying
 
 $$
-\aleph_0 \;<\; \kappa_n \;<\; 2^{\aleph_0},
+\aleph_0 \< \kappa_n < 2^{\aleph_0},
 $$
 
 and that each stratum supports a real‑closed field $F_n$ whose field operations are first‑order definable *within the same stratum*. The directed union $\bigcup_{n<\omega_1} F_n$ is conjectured to be **elementarily equivalent** to $(\mathbb R,+,\cdot,<)$; the limit field $F_\omega$ has cardinality $2^{\aleph_0}$. Optional: certain physical configuration spaces (quasicrystals, fracton phases) exhibit Hausdorff dimensions matching $\log_2\kappa_n$ (testable proxy).
