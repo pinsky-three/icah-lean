@@ -4,21 +4,35 @@ namespace ICAH
 
 open Cardinal
 
-/-- A size-aware ordered field with a designated cardinal `κ`.
-    This is a light wrapper used to talk about carriers together with their size. -/
+/-!
+## Size-aware ordered fields
+
+A `SizeAwareField` bundles a carrier type with its cardinality and the
+algebraic instances for an ordered field.  `LinearOrderedField` was deprecated
+in Mathlib (2025-10-30); we use `[Field K] [LinearOrder K] [IsStrictOrderedRing K]`.
+-/
+
+/-- A carrier type together with its designated cardinal and ordered-field instances.
+    Used to track which size layer a field lives in. -/
 structure SizeAwareField where
-  carrier : Type u
-  κ : Cardinal
-  inst : LinearOrderedField carrier
+  carrier  : Type*
+  κ        : Cardinal
+  [instField  : Field carrier]
+  [instLinOrd : LinearOrder carrier]
+  [instSOrd   : IsStrictOrderedRing carrier]
+  hcard    : Cardinal.mk carrier = κ
 
-  -- the designated size of the carrier
-  hcard : (#carrier) = κ
+attribute [instance] SizeAwareField.instField
+attribute [instance] SizeAwareField.instLinOrd
+attribute [instance] SizeAwareField.instSOrd
 
-attribute [instance] SizeAwareField.inst
+/-- Coerce a `SizeAwareField` to its carrier type. -/
+abbrev SizeAwareField.toType (F : SizeAwareField) : Type* := F.carrier
 
-notation "⟪" F "⟫" => F.carrier
+/-- Notation `⟪F⟫` for the carrier of a size-aware field. -/
+notation "⟪" F "⟫" => SizeAwareField.toType F
 
-/-- The carrier of a size-aware field has the recorded cardinality. -/
-lemma SizeAwareField.card (F : SizeAwareField) : (#⟪F⟫) = F.κ := F.hcard
+/-- The carrier has the recorded cardinality. -/
+lemma SizeAwareField.card (F : SizeAwareField) : Cardinal.mk ⟪F⟫ = F.κ := F.hcard
 
 end ICAH
