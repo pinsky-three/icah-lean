@@ -14,6 +14,6 @@ def ICAHStatement : Prop :=
     ∃ R : Stratum, R.n = n
 
 -- Treat the high-level research claim as an axiom for now so the library compiles.
-axiom ICAH : ICAHStatement
+axiom icahAxiom : ICAHStatement
 
 end ICAH
