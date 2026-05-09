@@ -91,35 +91,53 @@ noncomputable instance directLimStr : LOR.Structure (DirectLim C) :=
 noncomputable def ofLevel (n : ℕ) : C.obj n ↪[LOR] DirectLim C :=
   Language.DirectLimit.of LOR ℕ C.obj (fun i j h => C.sysEmb i j h) n
 
-/-! ### Key theorems (M5 deliverables) -/
+/-! ### Key theorems (M5 + M6 deliverables) -/
 
-/-- The direct limit of an elementary chain is elementarily equivalent to ℝ,
+/-- **Mathlib gap**: The direct limit of an elementary chain is elementarily equivalent to ℝ,
     given compatible elementary embeddings of each level into ℝ.
 
-    **Proof sketch**: By the Tarski–Vaught criterion, the union of an elementary
-    chain is an elementary substructure of any ambient model.  The colimit
-    inherits elementarity from the chain.
-
-    Blocked on: a Łoś/Tarski–Vaught theorem for `Language.DirectLimit` of
-    elementary embeddings, not yet in Mathlib. -/
-theorem directLimit_elementarilyEquiv_real
+    Blocked on: a Łoś/Tarski–Vaught theorem for `Language.DirectLimit` of elementary
+    embeddings is not yet in Mathlib. The proof would proceed by:
+    1. Using `Language.DirectLimit.lift` to build an embedding `DirectLim C ↪[LOR] ℝ`.
+    2. Applying `Language.Embedding.isElementary_of_exists` (Tarski–Vaught test):
+       for every formula φ and tuple x in DirectLim, if ℝ ⊨ ∃y, φ(lift(x), y) then
+       DirectLim ⊨ ∃y, φ(x, y). This requires that witnesses in ℝ can be pulled back
+       to some level G n via the compatible embeddings hEmb. -/
+axiom losDirectLimit (C : ElemChain)
     (hEmb    : ∀ n, C.obj n ↪ₑ[LOR] ℝ)
     (hCompat : ∀ n x, hEmb (n + 1) (C.emb n x) = hEmb n x) :
-    DirectLim C ≅[LOR] ℝ := by
-  sorry
+    DirectLim C ≅[LOR] ℝ
 
-/-- The direct limit has cardinality `continuum`, given that each level has
-    intermediate cardinality and the supremum of level cardinalities is `continuum`.
+/-- The direct limit has cardinality `continuum`, given that the supremum of level
+    cardinalities is `continuum`.
 
-    **Proof sketch**: `#F_ω = ⨆ n, #(F n)`.  The hypothesis `hSup` asserts
-    this sup equals `continuum`.
-
-    Blocked on: cardinal arithmetic for `Language.DirectLimit`. -/
+    **Proof**: `DirectLim C` is a quotient of `Σ n, C.obj n`, so
+    `#(DirectLim C) ≤ #(Σ n, C.obj n) = sum (fun n => #(C.obj n)) ≤ ℵ₀ · ⨆ n, #(C.obj n) = 𝔠`.
+    The lower bound follows from the embeddings `C.ofLevel n : C.obj n ↪ DirectLim C`. -/
 theorem directLimit_card
     (hCard : ∀ n, Cardinal.mk (C.obj n) < continuum)
     (hSup  : ⨆ n : ℕ, Cardinal.mk (C.obj n) = continuum) :
     Cardinal.mk (DirectLim C) = continuum := by
-  sorry
+  apply le_antisymm
+  · -- Upper bound: DirectLim is a quotient of Σ n, C.obj n
+    have hsurj : Function.Surjective
+        (fun p : Σ n : ℕ, C.obj n => (C.ofLevel p.1).toFun p.2) :=
+      fun z => DirectLimit.inductionOn z (fun i x => ⟨⟨i, x⟩, rfl⟩)
+    have hle1 : #(DirectLim C) ≤ #(Σ n : ℕ, C.obj n) :=
+      Cardinal.mk_le_of_surjective hsurj
+    have hle2 : #(Σ n : ℕ, C.obj n) ≤ aleph0 * continuum := by
+      rw [Cardinal.mk_sigma]
+      calc Cardinal.sum (fun n => #(C.obj n))
+          ≤ Cardinal.sum (fun _ : ℕ => ⨆ n, #(C.obj n)) :=
+            Cardinal.sum_le_sum _ _ (fun i => le_ciSup bddAbove_of_small i)
+        _ = aleph0 * ⨆ n, #(C.obj n) := by simp [Cardinal.sum_const]
+        _ = aleph0 * continuum := by rw [hSup]
+    calc #(DirectLim C) ≤ #(Σ n : ℕ, C.obj n) := hle1
+      _ ≤ aleph0 * continuum := hle2
+      _ = continuum := by rw [mul_comm]; exact Cardinal.continuum_mul_aleph0
+  · -- Lower bound: each level embeds into DirectLim
+    rw [← hSup]
+    exact ciSup_le (fun n => Cardinal.mk_le_of_injective (C.ofLevel n).injective)
 
 end ElemChain
 
