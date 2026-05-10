@@ -89,12 +89,69 @@ lemma definableOn_image_comp {S : Set ℝ} {k m : ℕ} {r : Set (Fin k → ℝ)}
     DefinableOn S m (r.image (· ∘ f)) :=
   show S.Definable LOR _ from h.image_comp f
 
-/-! ### Graph definability for binary operations -/
+/-- Definable sets are closed under preimage along index reordering.
+    Given `r : Set (Fin k → ℝ)` definable with params from `S`, and `f : Fin k → Fin m`,
+    the set `{g : Fin m → ℝ | g ∘ f ∈ r}` is also definable. -/
+lemma definableOn_preimage_comp {S : Set ℝ} {k m : ℕ} {r : Set (Fin k → ℝ)}
+    (h : DefinableOn S k r) (f : Fin k → Fin m) :
+    DefinableOn S m ((fun g => g ∘ f) ⁻¹' r) :=
+  show S.Definable LOR _ from h.preimage_comp f
 
-/-- The graph of a binary operation `op` restricted to `S` is definable with
-    parameters from `S`. -/
-def GraphDefinable (S : Set ℝ) (op : ℝ → ℝ → ℝ) : Prop :=
-  DefinableOn₂ S {p : ℝ × ℝ | ∃ z ∈ S, op p.1 p.2 = z}
+/-! ### Graph definability for ring operations
+
+The graphs of `+` and `·` on `ℝ` are first-order definable in `LOR` with any
+parameter set, because they are given by quantifier-free atomic formulas.
+
+Strategy: build the witness `BoundedFormula`, lift it to `LOR[[↑S]].Formula`
+via `lhomWithConstants`, then verify `Realize` via the chain:
+  `LHom.realize_onFormula` → `Formula.realize_relabel` → `BoundedFormula.realize_toFormula`. -/
+
+/-- The `LOR`-formula expressing `x₀ + x₁ = x₂` (no free parameters). -/
+private def addGraphBF : LOR.BoundedFormula Empty 3 :=
+  (Language.Term.func Ring.addFunc
+    (fun i => Language.Term.var (Sum.inr i.castSucc))) ='
+  (Language.Term.var (Sum.inr (Fin.last 2)))
+
+/-- The `LOR`-formula expressing `x₀ * x₁ = x₂` (no free parameters). -/
+private def mulGraphBF : LOR.BoundedFormula Empty 3 :=
+  (Language.Term.func Ring.mulFunc
+    (fun i => Language.Term.var (Sum.inr i.castSucc))) ='
+  (Language.Term.var (Sum.inr (Fin.last 2)))
+
+/-- Lift a parameter-free `LOR`-formula to `LOR[[↑S]]` for use in `Set.Definable`. -/
+private noncomputable def liftToWithConstants (S : Set ℝ)
+    (φ : LOR.BoundedFormula Empty 3) : LOR.withConstants ↑S |>.Formula (Fin 3) :=
+  (Language.lhomWithConstants LOR ↑S).onFormula
+    (φ.toFormula.relabel (Sum.elim Empty.elim id))
+
+
+/-- The graph of real addition is `LOR`-definable with any parameter set. -/
+lemma graphDefinable_add (S : Set ℝ) :
+    DefinableOn S 3 {f : Fin 3 → ℝ | f 0 + f 1 = f 2} := by
+  haveI : (Language.lhomWithConstants LOR ↑S).IsExpansionOn ℝ :=
+    withConstants_expansion LOR ↑S
+  exact ⟨liftToWithConstants S addGraphBF, by
+    ext v
+    simp only [Set.mem_setOf_eq, liftToWithConstants, LHom.realize_onFormula,
+               Formula.realize_relabel, BoundedFormula.realize_toFormula,
+               addGraphBF, BoundedFormula.realize_bdEqual, Term.realize_func,
+               Term.realize_var, Ring.addFunc, CompatibleRing.funMap_add,
+               Function.comp, Sum.elim_inr]
+    simp [Fin.castSucc, Fin.last]⟩
+
+/-- The graph of real multiplication is `LOR`-definable with any parameter set. -/
+lemma graphDefinable_mul (S : Set ℝ) :
+    DefinableOn S 3 {f : Fin 3 → ℝ | f 0 * f 1 = f 2} := by
+  haveI : (Language.lhomWithConstants LOR ↑S).IsExpansionOn ℝ :=
+    withConstants_expansion LOR ↑S
+  exact ⟨liftToWithConstants S mulGraphBF, by
+    ext v
+    simp only [Set.mem_setOf_eq, liftToWithConstants, LHom.realize_onFormula,
+               Formula.realize_relabel, BoundedFormula.realize_toFormula,
+               mulGraphBF, BoundedFormula.realize_bdEqual, Term.realize_func,
+               Term.realize_var, Ring.mulFunc, CompatibleRing.funMap_mul,
+               Function.comp, Sum.elim_inr]
+    simp [Fin.castSucc, Fin.last]⟩
 
 /-! ### Elementary embedding wrapper -/
 
