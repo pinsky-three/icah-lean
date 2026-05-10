@@ -11,9 +11,9 @@ cache:
 build:
 	$(LAKE) build
 
-## Type-check the umbrella file (faster than a full build when oleans are fresh)
+## Incremental type-check (rebuilds only stale oleans; equivalent to build but explicit)
 check:
-	$(LAKE) env $(LEAN) ICAH.lean
+	$(LAKE) build ICAH
 
 ## Count lines containing `sorry` in proof position (excludes comments)
 sorry-count:
