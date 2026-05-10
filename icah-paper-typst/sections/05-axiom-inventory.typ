@@ -1,5 +1,6 @@
 #import "../src/macros.typ": *
 
+#pagebreak(weak: true)
 = Axiom inventory and Mathlib roadmap
 
 A central strength of the Lean development is that it does not hide its assumptions. The theorem `icahTheorem` is assembled from proved components plus a small set of named dependencies.

@@ -1,8 +1,9 @@
-#import "@preview/unequivocal-ams:0.1.2": ams-article
+#import "src/ams-article.typ": ams-article
 #import "src/macros.typ": *
 
 #show: ams-article.with(
   title: [Intermediate-Cardinality Strata and Direct Limits in Lean: A Formalization Study around the Continuum],
+  running-head: [ICAH: Formalization Study around the Continuum],
   authors: (
     (
       name: "Bregy Malpartida",

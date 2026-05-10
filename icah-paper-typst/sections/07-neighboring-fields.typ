@@ -1,5 +1,6 @@
 #import "../src/macros.typ": *
 
+#pagebreak(weak: true)
 = Neighboring fields and analogues
 
 The ICAH architecture has natural analogues beyond real closed fields. The closest comparisons are not arbitrary fields but fields equipped with a closure principle and a first-order theory.

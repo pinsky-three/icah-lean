@@ -1,5 +1,6 @@
 #import "../src/macros.typ": *
 
+#pagebreak(weak: true)
 = Conclusion
 
 The current ICAH formalization is best presented as a rigorous formalization study rather than as a finished foundational theory. Its strongest mathematical components are already useful: the intermediate-cardinal witness under $not "CH"$, the concrete synthetic stratum, the subfield-to-size-aware-field construction, the definability lemmas for arithmetic graphs, and especially the cardinality theorem for direct limits.
