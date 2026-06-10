@@ -3,7 +3,12 @@
 #pagebreak(weak: true)
 = Axiom inventory and Mathlib roadmap
 
-A central strength of the Lean development is that it does not hide its assumptions. The theorem `icahTheorem` is assembled from proved components plus a small set of named dependencies.
+A central strength of the Lean development is that it does not hide its assumptions. The theorem `icahTheorem` is assembled from proved components plus a small set of named dependencies. After the June 2026 axiom-reduction effort, the inventory contains exactly **two** project axioms, enforced in-source by a `#guard_msgs in #print axioms icahTheorem` check and audited in CI:
+
+```
+'ICAH.icahTheorem' depends on axioms:
+  [propext, Classical.choice, not_CH, rcfModelComplete, Quot.sound]
+```
 
 == External mathematical assumption
 
@@ -13,46 +18,48 @@ A central strength of the Lean development is that it does not hide its assumpti
 
 This is not a Mathlib gap. It is the intended set-theoretic regime of the project. The paper should say explicitly that the theory is developed relative to $not "CH"$.
 
-== Abstract field-on-stratum assumption
+== The single remaining Mathlib gap
 
 #gap[
-  `ICAH.fieldOnStratum`: every stratum admits a size-aware field whose carrier and cardinal match the stratum.
+  `ICAH.rcfModelComplete`: model completeness of the theory of real-closed ordered fields (Tarski--Seidenberg). Concretely: the inclusion of a real-closed subfield of $RR$ into $RR$ is an elementary embedding in the language of ordered rings.
 ]
 
-This is too strong for arbitrary raw strata. The paper should present `SubfieldStratum` as the corrected refinement and `fieldOnSubfieldStratum` as the proved replacement in the subfield case.
+This is a true classical theorem whose first-order formalization (quantifier elimination or model completeness for RCF inside Mathlib's `ModelTheory` framework) is absent from Mathlib. It is the natural next contribution target, and discharging it would reduce the project to the single definitional axiom `not_CH`.
 
-== Intermediate-size subfields
+== Resolved former axioms
 
-#gap[
-  `ICAH.subfieldStratumExists`: under $not "CH"$, there exists a subfield of $RR$ with cardinality strictly between $aleph_0$ and $c$.
+The five remaining entries of the previous inventory were all discharged:
+
+#theorem[
+  `ICAH.Real.isRealClosed` --- *proved* (`ICAH/RealClosed.lean`): $RR$ is real closed, via `IsRealClosed.of_linearOrderedField`, `Real.sqrt` for squares, and the intermediate value theorem for odd-degree polynomials.
 ]
 
-The expected classical construction is to take a transcendence basis of $RR$ over $QQ$, choose a subset of size $aleph_1$, and take the real closure of the generated subfield inside $RR$. The Lean work needed is not the idea itself but the assembly of the relevant field-theoretic and cardinality APIs.
-
-== Real-closedness infrastructure
-
-#gap[
-  `ICAH.Real.isRealClosed`: package `IsRealClosed RR` as an available Mathlib fact.
+#theorem[
+  `ICAH.fieldOnStratum` --- *proved* (`ICAH/FieldOnStratum.lean`): every stratum admits a size-aware field, by `Equiv`-transport of the field structure of a real-closed subfield of matching cardinality.
 ]
 
-#gap[
-  `ICAH.subfieldIsRealClosed`: formulate and prove the preservation of real-closedness for the intended elementary subfield setting.
+#theorem[
+  `ICAH.subfieldStratumExists` --- *proved and strengthened* (`exists_rc_subfield`): for every $aleph_0 <= kappa <= c$ there is a *real-closed* subfield of $RR$ of cardinality exactly $kappa$, obtained as the relative algebraic closure of a generated subfield.
 ]
 
-The first gap is likely a direct Mathlib contribution. The second is more structural: it requires connecting `IsRealClosed` to first-order real-closed-field theory or using an appropriate elementary-substructure theorem.
-
-== Direct limits of elementary chains
-
-#gap[
-  `ICAH.ElemChain.losDirectLimit`: if every level of an elementary chain embeds compatibly into $RR$, then the direct limit is elementarily equivalent to $RR$.
+#theorem[
+  `ICAH.ElemChain.losDirectLimit` --- *proved* (`ICAH/ElementaryChain.lean`): the direct limit of an elementary chain compatibly embedded in $RR$ is elementarily equivalent to $RR$, via `Language.DirectLimit.lift` and the Tarski--Vaught test.
 ]
 
-This is the most important model-theoretic API gap. The expected proof route is to build the underlying embedding by `Language.DirectLimit.lift` and prove it elementary via a Tarski--Vaught argument.
+#remark[
+  Two further axioms of the earlier draft, `subfieldIsRealClosed` and `subfieldStratumElemEmb`, were *deleted as false in the stated generality*: $QQ$ is a subfield of $RR$ that is neither real closed nor elementarily embedded. They are replaced by the sound refinement `RCSubfieldStratum` (a stratum whose carrier is a real-closed subfield), for which elementarity follows from `rcfModelComplete`.
+]
+
+== The honest limit construction
+
+The original $NN$-indexed chain formulation of the limit-size milestone is vacuous under $not "CH"$: König's theorem gives $"cof"(c) > aleph_0$, so no countable chain of intermediate-size strata can union to $RR$. The corrected statement (`ICAH/CofinalFamily.lean`) indexes the family by the ordinal `𝔠.ord`:
+
+#theorem[
+  `exists_cofinal_rc_family`: there is a monotone family of real-closed subfields of $RR$, indexed by `𝔠.ord`, each of intermediate cardinality, whose union is all of $RR$; and `cofinal_family_limit_size`: the union has cardinality $c$.
+]
 
 == Recommended order of attack
 
-+ Polish and submit `IsRealClosed RR` to Mathlib.
-+ Extract `directLimit_card` as a reusable theorem or at least document it as a local theorem independent of ICAH.
-+ Prove an elementary-direct-limit theorem for `Language.DirectLimit`.
-+ Formalize intermediate-cardinality subfields via transcendence bases and real closure.
-+ Replace the global `fieldOnStratum` axiom with refined hypotheses, probably using `SubfieldStratum` or a closure predicate.
++ Extract `IsRealClosed RR` and the root-closure criterion `isRealClosed_of_forall_root` as Mathlib PRs.
++ Extract the elementary-direct-limit theorem (`losDirectLimit`) for `Language.DirectLimit` as a Mathlib PR.
++ Formalize quantifier elimination / model completeness for RCF in Mathlib's `ModelTheory` framework, discharging `rcfModelComplete` --- the final gap.

@@ -1,5 +1,36 @@
 # Spec: ICAH Lean — Incremental Proof Formalization
 
+> **Status (June 2026): implemented and superseded.**
+> All requirements R1–R10 below are complete, and the project has since gone
+> beyond this spec's acceptance criteria. `icahTheorem` now compiles with zero
+> sorries and depends on exactly **two** project axioms:
+>
+> ```
+> 'ICAH.icahTheorem' depends on axioms: [propext, Classical.choice, not_CH, rcfModelComplete, Quot.sound]
+> ```
+>
+> Deltas relative to this spec:
+>
+> - `fieldOnStratum` (R4), `Real.isRealClosed` / real-closedness (R5), and
+>   `losDirectLimit` (R6) were all **proved**, not axiomatized. New modules:
+>   `ICAH/RealClosed.lean`, `ICAH/CofinalFamily.lean`.
+> - `directLimit_card` (R6) was proved directly; no `ICAH.directLimitCard`
+>   axiom was needed.
+> - Two axioms introduced after this spec (`subfieldIsRealClosed`,
+>   `subfieldStratumElemEmb`) were found to be **mathematically false** as
+>   stated and were deleted, replaced by the sound `RCSubfieldStratum`
+>   refinement plus the single `rcfModelComplete` axiom (model completeness of
+>   RCF — the one remaining Mathlib gap).
+> - The ℕ-indexed M6 (R7) is vacuous under ¬CH by König's theorem
+>   (`cof 𝔠 > ℵ₀`); the honest formulation is the `𝔠.ord`-indexed cofinal
+>   family in `ICAH/CofinalFamily.lean` (`exists_cofinal_rc_family`,
+>   `cofinal_family_limit_size`), now used by `ICAHStatement`.
+> - The axiom set is enforced in-source by `#guard_msgs in #print axioms
+>   icahTheorem` (`ICAH/Main.lean`) and by CI (`.github/workflows/ci.yml`).
+>
+> Current state of record: `AGENTS.md`. Next target: prove `rcfModelComplete`.
+> The text below is preserved as the original working spec.
+
 ## Problem Statement
 
 The `icah-lean` repository contains a Lean 4 + Mathlib formalization of the
