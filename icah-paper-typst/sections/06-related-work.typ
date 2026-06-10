@@ -4,7 +4,7 @@
 
 == Continuum hypothesis and independence
 
-The set-theoretic background is classical. The Continuum Hypothesis asks whether $2^aleph_0 = aleph_1$, equivalently whether there is no intermediate cardinal between $aleph_0$ and the continuum. Gödel proved relative consistency of CH with ZFC, and Cohen proved the independence direction using forcing @koellner_ch @cohen1966.
+The set-theoretic background is classical. The Continuum Hypothesis asks whether $2^(aleph_0) = aleph_1$, equivalently whether there is no intermediate cardinal between $aleph_0$ and the continuum. Gödel proved relative consistency of CH with ZFC, and Cohen proved the independence direction using forcing @koellner_ch @cohen1966.
 
 The present work does not contribute to the independence problem itself. It works in the $not "CH"$ regime and asks what kind of algebraic and model-theoretic structure can be layered over intermediate-cardinality subsets or subfields of $RR$.
 
@@ -20,4 +20,4 @@ The project belongs to the growing ecosystem of Lean 4 and Mathlib formalization
 
 == Direct limits and elementary chains
 
-Elementary-chain arguments are standard in model theory. The formal contribution here is more specific: it tests how far Mathlib's `Language.DirectLimit` API can be pushed toward a fully formal elementary-chain theorem. The direct-limit cardinality result is already proved locally; the elementarity theorem remains a named target.
+Elementary-chain arguments are standard in model theory. The formal contribution here is more specific: it tests how far Mathlib's `Language.DirectLimit` API can be pushed toward a fully formal elementary-chain theorem. Both the direct-limit cardinality result and the elementarity theorem (`losDirectLimit`, via `DirectLimit.lift` and the Tarski--Vaught test) are now proved locally; both are natural candidates for upstreaming to Mathlib.

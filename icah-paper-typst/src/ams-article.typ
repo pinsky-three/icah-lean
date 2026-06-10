@@ -1,6 +1,11 @@
 // Local fork of unequivocal-ams:0.1.2 with an added `running-head` parameter.
-// When `running-head` is provided it is used in odd-page headers instead of
+// When `running-head` is provided it is used in running headers instead of
 // the full title, preventing long titles from wrapping across two lines.
+//
+// Deviation from upstream: the classic AMS alternation (author name on even
+// pages, title on odd pages) is replaced by a single consistent running head
+// on every page, with the page number on the outer edge. The alternating
+// author-name header reads as a visual glitch in single-author drafts.
 
 #let script-size   = 7.97224pt
 #let footnote-size = 8.50012pt
@@ -53,7 +58,7 @@
         columns: (6em, 1fr, 6em),
         align: (start, center, end),
         if calc.even(i) [#i],
-        upper(if calc.odd(i) { odd-head } else { author-string }),
+        upper(odd-head),
         if calc.odd(i) { [#i] }
       )
     },
@@ -100,7 +105,11 @@
 
   set list(indent: 24pt, body-indent: 5pt)
   set enum(indent: 24pt, body-indent: 5pt)
-  show link: set text(font: "New Computer Modern Mono")
+  // Upstream uses "New Computer Modern Mono", which is not bundled with the
+  // Typst CLI; fall back to the bundled DejaVu Sans Mono (slightly downsized
+  // to match the serif x-height) so links don't silently render in the
+  // default font.
+  show link: set text(font: "DejaVu Sans Mono", size: 0.88em)
 
   show math.equation: set block(below: 8pt, above: 9pt)
   show math.equation: set text(weight: 400)

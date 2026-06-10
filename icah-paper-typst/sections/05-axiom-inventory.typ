@@ -3,7 +3,7 @@
 #pagebreak(weak: true)
 = Axiom inventory and Mathlib roadmap
 
-A central strength of the Lean development is that it does not hide its assumptions. The theorem `icahTheorem` is assembled from proved components plus a small set of named dependencies. After the June 2026 axiom-reduction effort, the inventory contains exactly **two** project axioms, enforced in-source by a `#guard_msgs in #print axioms icahTheorem` check and audited in CI:
+A central strength of the Lean development is that it does not hide its assumptions. The theorem `icahTheorem` is assembled from proved components plus a small set of named dependencies. After the June 2026 axiom-reduction effort, the inventory contains exactly *two* project axioms, enforced in-source by a `#guard_msgs in #print axioms icahTheorem` check and audited in CI:
 
 ```
 'ICAH.icahTheorem' depends on axioms:
@@ -12,11 +12,11 @@ A central strength of the Lean development is that it does not hide its assumpti
 
 == External mathematical assumption
 
-#gap[
+#assumption[
   `ICAH.not_CH`: the negation of the Continuum Hypothesis, represented as `continuum ≠ aleph 1`.
 ]
 
-This is not a Mathlib gap. It is the intended set-theoretic regime of the project. The paper should say explicitly that the theory is developed relative to $not "CH"$.
+This is not a Mathlib gap. It is the intended set-theoretic regime of the project: the theory is developed relative to $not "CH"$.
 
 == The single remaining Mathlib gap
 

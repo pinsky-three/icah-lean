@@ -101,7 +101,7 @@ These lemmas are technically demanding because the proof must build explicit bou
 
 The proof has two halves. The upper bound exhibits the direct limit as a quotient of the sigma type $sum_(n : NN) C_n$, bounding its cardinality by $aleph_0 dot c = c$. The lower bound uses injectivity of the canonical maps from each level into the direct limit and then takes the supremum over levels.
 
-== The cofinal family at the continuum
+== Limit size via the cofinal family
 
 #theorem[
   `exists_cofinal_rc_family` and `cofinal_family_limit_size`: there is a monotone, `𝔠.ord`-indexed family of real-closed subfields of $RR$, each of intermediate cardinality under $not "CH"$, whose union is all of $RR$ and hence has cardinality $c$.
