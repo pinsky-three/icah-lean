@@ -26,10 +26,9 @@ structure Stratum where
     Here we only provide a placeholder field living on the subtype `S`. -/
 def Stratum.carrier (R : Stratum) : Type := {x : ℝ // x ∈ R.S}
 
-/-- Stub: a size-aware field attached to a stratum.
-    You will eventually supply the real-closed field structure and show it is definable within the same level. -/
-axiom fieldOnStratum (R : Stratum) :
-  ∃ (F : SizeAwareField), F.carrier = R.carrier ∧ F.κ = R.κ
+-- `fieldOnStratum` (formerly an axiom here) is now a theorem in
+-- `ICAH.FieldOnStratum`, proved by transporting a real-closed subfield of the
+-- right cardinality across an equivalence with the stratum carrier.
 
 /-! ## M1 — Cardinal lemmas -/
 

@@ -16,9 +16,13 @@ icah-lean/
 │   ├── SizeAwareField.lean    # SizeAwareField structure
 │   ├── Strata.lean            # Stratum structure + M1 cardinal lemmas
 │   ├── Definability.lean      # LOR definability kernel (M2)
-│   ├── FieldOnStratum.lean    # SubfieldStratum, field construction (M3+M4)
-│   ├── ElementaryChain.lean   # ElemChain, StratumChain, directLimit_card (M5+M6)
-│   └── Main.lean              # ICAHStatement + icahTheorem assembly
+│   ├── RealClosed.lean        # IsRealClosed ℝ + root-closed subfield criterion (M4)
+│   ├── FieldOnStratum.lean    # SubfieldStratum, relAlgebraic, exists_rc_subfield,
+│   │                          #   fieldOnStratum theorem, rcfModelComplete axiom (M3+M4)
+│   ├── ElementaryChain.lean   # ElemChain, losDirectLimit theorem, directLimit_card (M5)
+│   ├── CofinalFamily.lean     # 𝔠.ord-indexed cofinal RC subfield family (honest M6)
+│   └── Main.lean              # ICAHStatement + icahTheorem + #guard_msgs axiom audit
+├── .github/workflows/ci.yml   # CI: build + axiom audit + sorry count
 ├── Makefile                   # Build targets (see below)
 ├── lakefile.lean              # Lake project config (Mathlib dependency)
 ├── lean-toolchain             # Lean version pin
@@ -28,7 +32,9 @@ icah-lean/
 ### Module dependency order
 
 ```
-Axioms ──► SizeAwareField ──► Strata ──► Definability ──► FieldOnStratum ──► ElementaryChain ──► Main
+Axioms ──► SizeAwareField ──► Strata ──► Definability ──► RealClosed ──► FieldOnStratum
+                                                              ├──► ElementaryChain ──► Main
+                                                              └──► CofinalFamily ────► Main
 ```
 
 ---
@@ -67,23 +73,31 @@ curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh 
 | `Prelude.lean` | 1 example | ✅ Compiles |
 | `Axioms.lean` | 1 axiom, 1 theorem | ✅ `not_CH` + `exists_intermediate_cardinal` |
 | `SizeAwareField.lean` | 1 structure, 1 lemma | ✅ Compiles |
-| `Strata.lean` | 1 structure, 5 lemmas, 1 def | ✅ M1 complete; `fieldOnStratum` axiom remains |
+| `Strata.lean` | 1 structure, 5 lemmas, 1 def | ✅ M1 complete (no axioms) |
 | `Definability.lean` | 3 defs, 7 lemmas, 1 instance | ✅ M2 complete |
-| `FieldOnStratum.lean` | 2 structures, 6 defs/lemmas, 3 axioms, 1 instance | ✅ M3 complete; M4 axioms documented |
-| `ElementaryChain.lean` | 2 structures, 7 defs/lemmas, 1 axiom | ✅ M6 proved; M5 axiom documented |
-| `Main.lean` | 1 structure, 2 defs, 1 theorem, 1 axiom | ✅ `icahTheorem` proved |
+| `RealClosed.lean` | 2 theorems + helpers | ✅ `Real.isRealClosed` **proved** (IVT + sqrt) |
+| `FieldOnStratum.lean` | 3 structures, ~12 defs/lemmas/theorems, **1 axiom** | ✅ M3+M4: `fieldOnStratum`, `exists_rc_subfield`, `relAlgebraic_isRealClosed` proved |
+| `ElementaryChain.lean` | 2 structures, ~9 defs/lemmas/theorems | ✅ M5: `losDirectLimit` **proved** (Tarski–Vaught) |
+| `CofinalFamily.lean` | 2 theorems | ✅ Honest M6: cofinal RC family covering ℝ |
+| `Main.lean` | 1 structure, 1 def, 1 theorem | ✅ `icahTheorem` proved; axiom set locked by `#guard_msgs` |
 
 ### Named axioms (run `make axiom-count` to verify)
 
 | Axiom | File | Status |
 |---|---|---|
-| `ICAH.not_CH` | `Axioms.lean` | Global assumption (¬CH) |
-| `ICAH.fieldOnStratum` | `Strata.lean` | Abstract placeholder; proved for `SubfieldStratum` |
-| `ICAH.Real.isRealClosed` | `FieldOnStratum.lean` | Mathlib gap: `IsRealClosed ℝ` not yet an instance |
-| `ICAH.subfieldIsRealClosed` | `FieldOnStratum.lean` | Mathlib gap: subfield RCF not yet in Mathlib |
-| `ICAH.subfieldStratumExists` | `FieldOnStratum.lean` | Existence of intermediate-size subfield |
-| `ICAH.ElemChain.losDirectLimit` | `ElementaryChain.lean` | Mathlib gap: Łoś for `Language.DirectLimit` |
-| `ICAH.subfieldStratumElemEmb` | `Main.lean` | Mathlib gap: elementary embedding of subfield into ℝ |
+| `ICAH.not_CH` | `Axioms.lean` | Global assumption (¬CH) — definitional for ICAH |
+| `ICAH.rcfModelComplete` | `FieldOnStratum.lean` | Mathlib gap: model completeness of RCF (Tarski–Seidenberg); elementary embedding of a real-closed subfield into ℝ |
+
+Former axioms, now resolved:
+
+| Former axiom | Resolution |
+|---|---|
+| `ICAH.fieldOnStratum` | **Proved** (`FieldOnStratum.lean`): Equiv-transport from a real-closed subfield of cardinality `R.κ` |
+| `ICAH.Real.isRealClosed` | **Proved** (`RealClosed.lean`): `of_linearOrderedField` + `Real.sqrt` + IVT |
+| `ICAH.subfieldIsRealClosed` | **Deleted — was false** (ℚ is a subfield of ℝ, not real closed) |
+| `ICAH.subfieldStratumExists` | **Proved** (`FieldOnStratum.lean`): `exists_rc_subfield` via `relAlgebraic ∘ Subfield.closure` |
+| `ICAH.ElemChain.losDirectLimit` | **Proved** (`ElementaryChain.lean`): `DirectLimit.lift` + Tarski–Vaught test |
+| `ICAH.subfieldStratumElemEmb` | **Deleted — was false** for arbitrary subfields; replaced by `rcfModelComplete` (real-closed hypothesis added) |
 
 ---
 
@@ -229,72 +243,48 @@ Every theorem that is part of the ICAH claim should be checked with:
 #print axioms icahTheorem
 ```
 
-The expected output (non-kernel axioms only):
+The expected output is locked into the build via `#guard_msgs` in `Main.lean`:
 ```
-ICAH.not_CH
-ICAH.fieldOnStratum
-ICAH.subfieldStratumExists
-ICAH.Real.isRealClosed
-ICAH.subfieldIsRealClosed
-ICAH.ElemChain.losDirectLimit
-ICAH.subfieldStratumElemEmb
+'ICAH.icahTheorem' depends on axioms: [propext, Classical.choice, not_CH, rcfModelComplete, Quot.sound]
 ```
 
-If `sorryAx` appears, there is a hidden `sorry` somewhere — find and fix it before
-declaring the proof complete.
+Only two project axioms remain: `ICAH.not_CH` (the ¬CH assumption, definitional
+for ICAH) and `ICAH.rcfModelComplete` (model completeness of RCF). If the axiom
+set drifts — including a hidden `sorryAx` — `lake build` fails.
 
 ---
 
-## Closing the remaining axiom gaps
+## Closing the remaining axiom gap
 
-The following axioms are the primary targets for the next formalization stage:
+### `ICAH.rcfModelComplete` (the only Mathlib gap)
 
-### 1. `ICAH.ElemChain.losDirectLimit` (highest priority)
+**What**: a real-closed subfield `K ⊆ ℝ` is an *elementary* substructure of ℝ in
+the language of ordered rings (`K ↪ₑ[LOR] ℝ`).
 
-**What**: Łoś/Tarski–Vaught theorem for `Language.DirectLimit` of elementary embeddings.
+**Mathematical content**: model completeness of the theory of real-closed
+fields, a consequence of Tarski–Seidenberg quantifier elimination. True theorem;
+formalizing QE for RCF in Mathlib is a substantial project
+(`Mathlib.ModelTheory.Algebra.*` has begun work on field languages).
 
-**Proof strategy**:
-1. Use `Language.DirectLimit.lift` to build an embedding `DirectLim C ↪[L] ℝ`.
-2. Apply `Language.Embedding.isElementary_of_exists` (Tarski–Vaught test):
-   for every formula φ and tuple x in DirectLim, if ℝ ⊨ ∃y, φ(lift(x), y) then
-   DirectLim ⊨ ∃y, φ(x, y).
-3. The witness in ℝ can be pulled back to some level G n via the compatible embeddings.
+**Proof strategy** (long-term):
+1. Formalize quantifier elimination for RCF in `LOR` (Tarski–Seidenberg), or
+2. Use a model-theoretic criterion (e.g., every RCF embedding is existentially
+   closed, via sign-change/root-counting arguments + the intermediate value
+   property of real-closed fields, already partially in
+   `Mathlib.FieldTheory.IsRealClosed`).
 
-**Mathlib status**: `Language.DirectLimit` exists; the elementary version is absent.
-Consider contributing this to Mathlib.
+**Note on soundness**: the real-closedness hypothesis is essential. The former
+axiom `subfieldStratumElemEmb` asserted this for *arbitrary* subfields and was
+false (ℚ ⊆ ℝ is not elementary: `∃x, x² = 2` distinguishes them). All strata
+used in `icahTheorem` now carry `IsRealClosed` witnesses (`RCSubfieldStratum`),
+which exist at every intermediate cardinality by `exists_rc_subfield`.
 
-### 2. `ICAH.Real.isRealClosed` + `ICAH.subfieldIsRealClosed`
+### A note on M6 and König's theorem
 
-**What**: `IsRealClosed ℝ` instance and its inheritance by subfields.
-
-**Proof strategy for `IsRealClosed ℝ`**:
-- `isSquare_or_isSquare_neg`: use `Real.sqrt` for non-negatives.
-- `exists_isRoot_of_odd_natDegree`: use IVT (`intermediate_value_univ`) +
-  `Polynomial.tendsto_atTop`/`atBot` for the sign-change argument.
-
-**Proof strategy for subfields**:
-- Show `K ≺ ℝ` (elementary substructure) using `subfieldStratumElemEmb`.
-- Cite that elementary substructures of RCFs are RCFs.
-
-### 3. `ICAH.subfieldStratumExists`
-
-**What**: existence of a subfield of ℝ with `ℵ₀ < κ < 𝔠`.
-
-**Proof strategy**: Under `not_CH`, `ℵ₁ < 𝔠`. Take a transcendence basis B of ℝ
-over ℚ with `#B = 𝔠`. Choose a subset B' ⊆ B with `#B' = ℵ₁`. The real closure
-of ℚ(B') in ℝ is a subfield of ℝ with cardinality `ℵ₁`. This requires:
-- `Cardinal.exists_subset_card_le` or similar for choosing B'.
-- Real closure construction (not yet in Mathlib for subfields of ℝ).
-
-### 4. `ICAH.fieldOnStratum` (abstract placeholder)
-
-**What**: every `Stratum` (not just `SubfieldStratum`) admits a `SizeAwareField`.
-
-**Current state**: proved for `SubfieldStratum` via `fieldOnSubfieldStratum`.
-The abstract axiom remains for strata whose carrier is not a priori a subfield.
-
-**Resolution**: either restrict `Stratum` to always be a `SubfieldStratum`, or
-prove that every intermediate-size definable set in ℝ is contained in a subfield.
+The ℕ-indexed `directLimit_card` hypothesis set (`∀ n, #(obj n) < 𝔠` and
+`⨆ n, #(obj n) = 𝔠`) is unsatisfiable since `cof 𝔠 > ℵ₀`. The honest M6 is
+`ICAH.CofinalFamily.exists_cofinal_rc_family`: a `𝔠.ord`-indexed monotone family
+of intermediate-size real-closed subfields whose union is all of ℝ.
 
 ---
 

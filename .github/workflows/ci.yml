@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    name: Build + axiom audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Cache Mathlib oleans
+        uses: actions/cache@v4
+        with:
+          path: .lake
+          key: lake-${{ runner.os }}-${{ hashFiles('lake-manifest.json', 'lean-toolchain') }}
+
+      - name: Get Mathlib cache
+        run: lake exe cache get
+
+      # The axiom audit is enforced inside the build: ICAH/Main.lean contains a
+      # `#guard_msgs in #print axioms icahTheorem` block that fails compilation
+      # if the axiom set ever drifts from {not_CH, rcfModelComplete} + kernel.
+      - name: Build
+        run: lake build
+
+      - name: Sorry count (must be 0)
+        run: |
+          count=$(grep -rn "sorry" ICAH/ ICAH.lean --include="*.lean" | grep -v "sorryAx\|-- " | wc -l | tr -d ' ')
+          echo "sorry count: $count"
+          test "$count" = "0"

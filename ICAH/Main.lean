@@ -2,8 +2,10 @@ import Mathlib
 import ICAH.Axioms
 import ICAH.Strata
 import ICAH.Definability
+import ICAH.RealClosed
 import ICAH.FieldOnStratum
 import ICAH.ElementaryChain
+import ICAH.CofinalFamily
 
 namespace ICAH
 
@@ -23,29 +25,23 @@ open Cardinal FirstOrder FirstOrder.Language FirstOrder.Ring
 3. **(M5) Elementary chain**: A `StratumChain` whose direct limit is elementarily
    equivalent to `ℝ` in `LOR`.
 
-4. **(M6) Limit size**: A `StratumChain` whose direct limit has cardinality `𝔠`.
+4. **(M6) Limit size**: A `𝔠.ord`-indexed monotone family of intermediate-size
+   subfields of ℝ whose union has cardinality `𝔠`.  (The former ℕ-indexed
+   formulation was vacuous by König's theorem — see `ICAH.CofinalFamily`.)
 
 ### Axiom inventory
 
 Run `#print axioms icahTheorem` to see the full axiom set. Expected non-kernel axioms:
-- `ICAH.not_CH` (¬CH assumption)
-- `ICAH.fieldOnStratum` (abstract field-on-stratum placeholder)
-- `ICAH.subfieldStratumExists` (intermediate-size subfield existence)
-- `ICAH.Real.isRealClosed` (IsRealClosed ℝ, Mathlib gap)
-- `ICAH.subfieldIsRealClosed` (subfield real-closedness, Mathlib gap)
-- `ICAH.losDirectLimit` (Łoś theorem for DirectLimit, Mathlib gap)
-- `ICAH.subfieldStratumElemEmb` (elementary embedding of SubfieldStratum into ℝ)
+- `ICAH.not_CH` — the ¬CH assumption (intentional, definitional for ICAH).
+- `ICAH.rcfModelComplete` — model completeness of RCF (Tarski–Seidenberg), the
+  single remaining Mathlib gap.
+
+Everything else that used to be an axiom (`fieldOnStratum`, `Real.isRealClosed`,
+`subfieldIsRealClosed`, `subfieldStratumExists`, `losDirectLimit`,
+`subfieldStratumElemEmb`) has been proved or deleted (the two false ones).
 -/
 
-/-! ### Additional axiom: elementary embedding of SubfieldStratum carriers into ℝ -/
-
-/-- **Mathlib gap**: every `SubfieldStratum` carrier embeds elementarily into `ℝ`.
-    This follows from the fact that subfields of a real-closed field are elementary
-    substructures in the ordered ring language, but the model-theoretic machinery
-    for this is not yet assembled in Mathlib for `IsRealClosed`. -/
-axiom subfieldStratumElemEmb (R : SubfieldStratum) : R.toStratum.carrier ↪ₑ[LOR] ℝ
-
-/-! ### Refined ICAHStatement -/
+/-! ### ICAHStatement -/
 
 /-- The four core claims of ICAH, assembled from the milestone results. -/
 structure ICAHStatement : Prop where
@@ -55,11 +51,12 @@ structure ICAHStatement : Prop where
   field_on_stratum : ∀ (R : Stratum), ∃ F : SizeAwareField, F.carrier = R.carrier ∧ F.κ = R.κ
   /-- M5: There exists a StratumChain whose direct limit is elementarily equivalent to ℝ. -/
   elementary_chain : ∃ (SC : StratumChain), SC.toElemChain.DirectLim ≅[LOR] ℝ
-  /-- M6: There exists a StratumChain whose direct limit has cardinality 𝔠. -/
-  limit_size : ∃ (SC : StratumChain),
-    (∀ n, #(SC.toElemChain.obj n) < continuum) →
-    (⨆ n : ℕ, #(SC.toElemChain.obj n) = continuum) →
-    #(SC.toElemChain.DirectLim) = continuum
+  /-- M6 (honest form): a `𝔠.ord`-indexed monotone family of subfields of ℝ,
+      each of intermediate size, whose union has cardinality `𝔠`. -/
+  limit_size : ∃ K : ContinuumIdx → Subfield ℝ,
+    Monotone K ∧
+    (∀ i, aleph0 < #(K i) ∧ #(K i) < continuum) ∧
+    #(⋃ i, (K i : Set ℝ)) = continuum
 
 /-! ### Helper: constant StratumChain on a SubfieldStratum -/
 
@@ -77,12 +74,7 @@ noncomputable def mkConstantSC (R : SubfieldStratum) : StratumChain where
 
     **Axiom dependency** (see `#print axioms icahTheorem` below):
     - `ICAH.not_CH`: ¬CH (global assumption)
-    - `ICAH.fieldOnStratum`: field-on-stratum (abstract placeholder)
-    - `ICAH.subfieldStratumExists`: intermediate-size subfield existence
-    - `ICAH.Real.isRealClosed`: `IsRealClosed ℝ` (Mathlib gap)
-    - `ICAH.subfieldIsRealClosed`: subfield real-closedness (Mathlib gap)
-    - `ICAH.losDirectLimit`: Łoś theorem for `Language.DirectLimit` (Mathlib gap)
-    - `ICAH.subfieldStratumElemEmb`: elementary embedding of SubfieldStratum (Mathlib gap) -/
+    - `ICAH.rcfModelComplete`: model completeness of RCF (Mathlib gap) -/
 theorem icahTheorem : ICAHStatement where
   -- M1: Build a stratum with the requested ordinal index, reusing syntheticStratum's
   -- cardinal witness (which exists under not_CH).
@@ -92,25 +84,28 @@ theorem icahTheorem : ICAHStatement where
        κ       := syntheticStratum.κ
        h_card  := syntheticStratum.h_card
        h_bounds := syntheticStratum.h_bounds }, rfl⟩
-  -- M3: Covered directly by the fieldOnStratum axiom.
+  -- M3: fieldOnStratum is now a theorem (Equiv transport from a real-closed
+  -- subfield of the right cardinality).
   field_on_stratum := fieldOnStratum
-  -- M5: Use a constant StratumChain on intermediateSubfieldStratum.
-  -- The elementary equivalence follows from losDirectLimit with subfieldStratumElemEmb.
+  -- M5: Constant StratumChain on intermediateRCSubfieldStratum; each level embeds
+  -- elementarily into ℝ via rcfModelComplete, and losDirectLimit (now a theorem)
+  -- gives the elementary equivalence of the direct limit with ℝ.
   elementary_chain := by
-    let R  := intermediateSubfieldStratum
-    let SC := mkConstantSC R
-    -- All levels embed elementarily into ℝ via subfieldStratumElemEmb.
-    let hEmb : ∀ n, SC.toElemChain.obj n ↪ₑ[LOR] ℝ := fun _ => subfieldStratumElemEmb R
-    -- Compatibility: the constant chain has emb n = refl, so hEmb (n+1) ∘ emb n = hEmb n.
+    let R  := intermediateRCSubfieldStratum
+    let SC := mkConstantSC R.toSubfieldStratum
+    let hEmb : ∀ n, SC.toElemChain.obj n ↪ₑ[LOR] ℝ := fun _ => rcfModelComplete R
     have hCompat : ∀ n x, hEmb (n + 1) (SC.toElemChain.emb n x) = hEmb n x :=
       fun _ _ => rfl
     exact ⟨SC, ElemChain.losDirectLimit SC.toElemChain hEmb hCompat⟩
-  -- M6: directLimit_card is a proved theorem (no extra axioms beyond the chain hypotheses).
-  limit_size :=
-    ⟨mkConstantSC intermediateSubfieldStratum,
-     fun hCard hSup => ElemChain.directLimit_card _ hCard hSup⟩
+  -- M6: the cofinal family of intermediate-size real-closed subfields covering ℝ.
+  limit_size := cofinal_family_limit_size
 
 -- Axiom inventory: all non-kernel axioms used by icahTheorem.
+-- `#guard_msgs` turns any drift in this axiom set into a build failure.
+/--
+info: 'ICAH.icahTheorem' depends on axioms: [propext, Classical.choice, not_CH, rcfModelComplete, Quot.sound]
+-/
+#guard_msgs in
 #print axioms icahTheorem
 
 end ICAH
