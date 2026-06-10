@@ -14,12 +14,12 @@
     ),
   ),
   abstract: [
-    This paper draft presents a Lean 4 formalization study of an Intermediate-Cardinality Arithmetic Hypothesis (ICAH): a stratified view of the real continuum under the negation of the Continuum Hypothesis. The development packages intermediate-size subsets of $RR$ as strata, refines strata that are closed under field operations as subfield strata, bundles cardinal data with ordered-field structure through size-aware fields, and studies elementary chains and their direct limits in the language of rings. The current formalization contains several fully proved components, including an intermediate-cardinal witness under $not "CH"$, a concrete synthetic stratum of cardinality $aleph_1$, a countability bound for the real algebraic numbers, definability lemmas for the graphs of addition and multiplication, and a cardinal-arithmetic theorem for direct limits. The remaining dependencies are deliberately exposed as named axioms, yielding both a mathematical statement and a roadmap for Mathlib contributions.
+    This paper draft presents a Lean 4 formalization study of an Intermediate-Cardinality Arithmetic Hypothesis (ICAH): a stratified view of the real continuum under the negation of the Continuum Hypothesis. The development packages intermediate-size subsets of $RR$ as strata, bundles cardinal data with ordered-field structure through size-aware fields, and studies elementary chains and their direct limits in the language of ordered rings. The formalization proves, among other results: that $RR$ is a real-closed field; that for every cardinal $aleph_0 <= kappa <= 2^(aleph_0)$ there is a real-closed subfield of $RR$ of cardinality exactly $kappa$; a Łoś-style elementarity theorem for direct limits of elementary chains compatibly embedded in $RR$; a cardinal-arithmetic theorem for such direct limits; and, under $not "CH"$, a continuum-indexed cofinal family of intermediate-size real-closed subfields whose union is $RR$. The assembled main theorem depends on exactly two named axioms — the set-theoretic regime $not "CH"$ and the model completeness of real-closed fields (Tarski–Seidenberg), the latter being the single remaining Mathlib gap — and the axiom inventory is machine-checked in the build.
   ],
   bibliography: bibliography("refs.bib"),
 )
 
-#align(center)[#smallcaps([Working draft]) · version 0.2.0 · May 2026]
+#align(center)[#smallcaps([Working draft]) · version 0.3.0 · June 2026]
 
 #include "sections/01-introduction.typ"
 #include "sections/02-background.typ"

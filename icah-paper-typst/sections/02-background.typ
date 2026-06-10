@@ -4,13 +4,13 @@
 
 == The continuum and the role of $not "CH"$
 
-Let $c = 2^aleph_0$ denote the cardinality of the continuum. The Continuum Hypothesis states that there is no cardinal $kappa$ satisfying $aleph_0 < kappa < c$. Since Gödel and Cohen, the standard mathematical background is that CH is independent of ZFC, assuming ZFC is consistent @koellner_ch @cohen1966.
+Let $c = 2^(aleph_0)$ denote the cardinality of the continuum. The Continuum Hypothesis states that there is no cardinal $kappa$ satisfying $aleph_0 < kappa < c$. Since Gödel and Cohen, the standard mathematical background is that CH is independent of ZFC, assuming ZFC is consistent @koellner_ch @cohen1966.
 
 The Lean project therefore does not attempt to prove $not "CH"$ in ZFC. Instead, it introduces $not "CH"$ as a named axiom and develops all downstream objects relative to that assumption.
 
 #proposition[
   Under the project axiom `ICAH.not_CH`, the cardinal $aleph_1$ witnesses the existence of an intermediate cardinal:
-  $ exists kappa, aleph_0 < kappa and kappa < 2^aleph_0. $
+  $ exists kappa, aleph_0 < kappa and kappa < 2^(aleph_0). $
 ]
 
 The Lean proof uses the standard inequality $aleph_0 < aleph_1$, the theorem $aleph_1 <= c$, and converts the inequality plus non-equality $c != aleph_1$ into the strict inequality $aleph_1 < c$.

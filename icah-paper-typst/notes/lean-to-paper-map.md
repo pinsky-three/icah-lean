@@ -16,7 +16,15 @@
 | `embLE` | Composite elementary embeddings | Construction | Preserves elementarity |
 | `embLE_eq_sysEmb` | Coherence with directed-system API | Proved | Important Lean/API bridge |
 | `DirectLim` | Direct-limit carrier | Definition | Uses `Language.DirectLimit` |
-| `losDirectLimit` | Elementary equivalence of direct limit | Axiom / Mathlib gap | Tarski--Vaught route |
-| `directLimit_card` | Headline cardinal theorem | Proved | Best main theorem for paper |
-| `ICAHStatement` | Top-level Prop-valued statement | Definition | Four core claims M1/M3/M5/M6 |
-| `icahTheorem` | Assembly theorem | Proved from named assumptions | Include exact axiom inventory |
+| `losDirectLimit` | Elementary equivalence of direct limit | Proved | `DirectLimit.lift` + Tarski--Vaught test; Mathlib PR candidate |
+| `directLimit_card` | Headline cardinal theorem | Proved | Reusable cardinal-arithmetic theorem |
+| `Real.isRealClosed` | ℝ is real closed | Proved | `of_linearOrderedField` + sqrt + IVT; Mathlib PR candidate |
+| `isRealClosed_of_forall_root` | Root-closure criterion for subfields | Proved | Drives `relAlgebraic_isRealClosed` |
+| `exists_rc_subfield` | RC subfields of every infinite cardinality ≤ 𝔠 | Proved | Strengthens former `subfieldStratumExists` axiom |
+| `fieldOnStratum` | Field on arbitrary stratum | Proved | Equiv-transport; formerly an axiom |
+| `RCSubfieldStratum` | Real-closed field-bearing stratum | Definition | Sound replacement for deleted false axioms |
+| `rcfModelComplete` | Model completeness of RCF | Axiom / Mathlib gap | The single remaining gap (Tarski--Seidenberg) |
+| `exists_cofinal_rc_family` | Honest M6: cofinal RC family | Proved | 𝔠.ord-indexed; avoids König obstruction |
+| `cofinal_family_limit_size` | Union has cardinality 𝔠 | Proved | Limit-size clause of `ICAHStatement` |
+| `ICAHStatement` | Top-level Prop-valued statement | Definition | Core claims M1/M3/M5/M6 (M6 via cofinal family) |
+| `icahTheorem` | Assembly theorem | Proved | Axioms: `not_CH`, `rcfModelComplete` only; enforced via `#guard_msgs` |

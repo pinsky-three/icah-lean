@@ -20,15 +20,17 @@ the directed system is built from their underlying `Embedding` coercions.
 
 1. `ElemChain.embLE`  — compose successor elem-embeddings: `obj m ↪ₑ[LOR] obj n`.
 2. `ElemChain.DirectLim` — the `Language.DirectLimit` colimit type.
-3. `directLimit_elementarilyEquiv_real` — `F_ω ≅[LOR] ℝ` (sorry-stub).
-4. `directLimit_card` — `#F_ω = continuum` (sorry-stub).
+3. `losDirectLimit` — `F_ω ≅[LOR] ℝ` (proved via `DirectLimit.lift` + Tarski–Vaught).
+4. `directLimit_card` — `#F_ω = continuum` given the chain hypotheses.
 
-### Status
+### A note on M6 and König's theorem
 
-Infrastructure compiles.  Theorems 3–4 are `sorry`-stubs pending:
-- A Łoś/Tarski–Vaught theorem for direct limits of elementary embeddings
-  (not yet in Mathlib).
-- Cardinal arithmetic for the colimit size.
+For a ℕ-indexed chain the hypothesis `⨆ n, #(obj n) = 𝔠` together with
+`∀ n, #(obj n) < 𝔠` is unsatisfiable: `cof 𝔠 > ℵ₀` (König), so a countable
+supremum of cardinals `< 𝔠` is `< 𝔠`.  `directLimit_card` is therefore an
+honest conditional theorem but vacuous over ℕ.  The non-vacuous form of M6
+is `ICAH.CofinalFamily`: a `𝔠.ord`-indexed nested family of intermediate-size
+real-closed subfields covering all of ℝ.
 -/
 
 namespace ICAH
@@ -93,20 +95,92 @@ noncomputable def ofLevel (n : ℕ) : C.obj n ↪[LOR] DirectLim C :=
 
 /-! ### Key theorems (M5 + M6 deliverables) -/
 
-/-- **Mathlib gap**: The direct limit of an elementary chain is elementarily equivalent to ℝ,
+/-- The composite elementary embeddings are compatible with the directed-system maps:
+    pushing through `embLE` agrees with the given embeddings into ℝ. -/
+lemma hEmb_embLE (hEmb : ∀ n, C.obj n ↪ₑ[LOR] ℝ)
+    (hCompat : ∀ n x, hEmb (n + 1) (C.emb n x) = hEmb n x)
+    {i j : ℕ} (hij : i ≤ j) (x : C.obj i) :
+    hEmb j (C.embLE hij x) = hEmb i x := by
+  induction j, hij using Nat.le_induction with
+  | base =>
+    have h : C.embLE (le_refl i) x = x := by
+      simp [ElemChain.embLE, Nat.leRecOn_self]
+    rw [h]
+  | succ j hij ih =>
+    have h : C.embLE (Nat.le_succ_of_le hij) x = (C.emb j) (C.embLE hij x) := by
+      simp only [ElemChain.embLE]
+      erw [Nat.leRecOn_succ hij]
+      rfl
+    rw [h, hCompat, ih]
+
+/-- Compatibility through the directed-system maps `sysEmb`. -/
+lemma hEmb_sysEmb (hEmb : ∀ n, C.obj n ↪ₑ[LOR] ℝ)
+    (hCompat : ∀ n x, hEmb (n + 1) (C.emb n x) = hEmb n x)
+    (i j : ℕ) (hij : i ≤ j) (x : C.obj i) :
+    hEmb j (C.sysEmb i j hij x) = hEmb i x := by
+  rw [← congrFun (C.embLE_eq_sysEmb hij) x]
+  exact C.hEmb_embLE hEmb hCompat hij x
+
+/-- **Łoś / Tarski–Vaught for the direct limit** (formerly a named axiom):
+    the direct limit of an elementary chain is elementarily equivalent to ℝ,
     given compatible elementary embeddings of each level into ℝ.
 
-    Blocked on: a Łoś/Tarski–Vaught theorem for `Language.DirectLimit` of elementary
-    embeddings is not yet in Mathlib. The proof would proceed by:
-    1. Using `Language.DirectLimit.lift` to build an embedding `DirectLim C ↪[LOR] ℝ`.
-    2. Applying `Language.Embedding.isElementary_of_exists` (Tarski–Vaught test):
-       for every formula φ and tuple x in DirectLim, if ℝ ⊨ ∃y, φ(lift(x), y) then
-       DirectLim ⊨ ∃y, φ(x, y). This requires that witnesses in ℝ can be pulled back
-       to some level G n via the compatible embeddings hEmb. -/
-axiom losDirectLimit (C : ElemChain)
+    Proof: `Language.DirectLimit.lift` assembles the level embeddings into
+    `F : DirectLim C ↪[LOR] ℝ`; the Tarski–Vaught test
+    (`Embedding.toElementaryEmbedding`) shows `F` is elementary, because any
+    existential witness in ℝ over a tuple from `DirectLim C` can be reflected
+    into the level `C.obj i` where the (finitely many) tuple entries live,
+    by elementarity of `hEmb i`. -/
+theorem losDirectLimit (C : ElemChain)
     (hEmb    : ∀ n, C.obj n ↪ₑ[LOR] ℝ)
     (hCompat : ∀ n x, hEmb (n + 1) (C.emb n x) = hEmb n x) :
-    DirectLim C ≅[LOR] ℝ
+    DirectLim C ≅[LOR] ℝ := by
+  classical
+  -- Assemble the level embeddings into an embedding of the direct limit.
+  let g : ∀ n, C.obj n ↪[LOR] ℝ := fun n => (hEmb n).toEmbedding
+  have Hg : ∀ i j hij x, g j (C.sysEmb i j hij x) = g i x := fun i j hij x =>
+    C.hEmb_sysEmb hEmb hCompat i j hij x
+  let F : DirectLim C ↪[LOR] ℝ :=
+    Language.DirectLimit.lift LOR ℕ C.obj (fun i j h => C.sysEmb i j h) g Hg
+  have hF : ∀ (i : ℕ) (x : C.obj i), F (C.ofLevel i x) = hEmb i x := by
+    intro i x
+    show Language.DirectLimit.lift LOR ℕ C.obj (fun i j h => C.sysEmb i j h) g Hg
+      (Language.DirectLimit.of LOR ℕ C.obj (fun i j h => C.sysEmb i j h) i x) = hEmb i x
+    rw [Language.DirectLimit.lift_of]
+    rfl
+  -- Tarski–Vaught test.
+  refine (F.toElementaryEmbedding ?_).elementarilyEquivalent
+  -- `Empty → M` is a subsingleton, so realization is independent of the
+  -- free-variable assignment (the `default` terms below differ by instance path).
+  have realize_congr : ∀ {M : Type _} [LOR.Structure M] {k : ℕ}
+      (ψ : LOR.BoundedFormula Empty k) (v w : Empty → M) (xs : Fin k → M),
+      ψ.Realize v xs → ψ.Realize w xs := by
+    intro M _ k ψ v w xs h
+    rwa [Subsingleton.elim w v]
+  intro n φ x a ha
+  -- The tuple x comes from a single level i.
+  obtain ⟨i, y, rfl⟩ := Language.DirectLimit.exists_quotient_mk'_sigma_mk'_eq
+    C.obj (fun i j h => C.sysEmb i j h) x
+  have hFx : F ∘ (fun a => (⟦Structure.Sigma.mk (fun i j h => C.sysEmb i j h) i (y a)⟧ :
+      DirectLim C)) = (hEmb i : C.obj i → ℝ) ∘ y := by
+    funext b
+    simp only [Function.comp_apply]
+    exact hF i (y b)
+  rw [hFx] at ha
+  -- ℝ realizes the existential at the image of y; pull it back to level i.
+  have hex : φ.ex.Realize ((hEmb i : C.obj i → ℝ) ∘ (default : Empty → C.obj i))
+      ((hEmb i : C.obj i → ℝ) ∘ y) :=
+    BoundedFormula.realize_ex.mpr ⟨a, realize_congr _ _ _ _ ha⟩
+  have hexi : φ.ex.Realize (default : Empty → C.obj i) y :=
+    ((hEmb i).map_boundedFormula φ.ex (default : Empty → C.obj i) y).mp hex
+  obtain ⟨b, hb⟩ := BoundedFormula.realize_ex.mp hexi
+  -- Push the witness forward into the direct limit.
+  refine ⟨C.ofLevel i b, ?_⟩
+  have hpush := ((hEmb i).map_boundedFormula φ (default : Empty → C.obj i)
+    (Fin.snoc y b)).mpr hb
+  rw [Fin.comp_snoc] at hpush
+  rw [hFx, hF]
+  exact realize_congr _ _ _ _ hpush
 
 /-- The direct limit has cardinality `continuum`, given that the supremum of level
     cardinalities is `continuum`.

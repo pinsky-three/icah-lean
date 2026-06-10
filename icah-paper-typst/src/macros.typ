@@ -20,6 +20,7 @@
 #let construction(body) = statement("Construction", body)
 #let remark(body) = statement("Remark", body)
 #let gap(body) = statement("Mathlib gap", body)
+#let assumption(body) = statement("Assumption", body)
 #let contribution(body) = statement("Contribution", body)
 
 #let todo(body) = block(
@@ -34,7 +35,7 @@
 #let Lean(name) = raw(name)
 #let CH = $"CH"$
 #let notCH = $not "CH"$
-#let continuum = $2^aleph_0$
+#let continuum = $2^(aleph_0)$
 #let alephzero = $aleph_0$
 #let alephone = $aleph_1$
 #let R = $RR$
