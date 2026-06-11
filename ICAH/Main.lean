@@ -22,8 +22,9 @@ The development proves two main theorems, sharing the `NotCH` hypothesis:
   downward Löwenheim–Skolem — holds under `NotCH` **alone**.
 * **Pillar B** (`icahTheorem`, this file): the *algebraic realization* —
   strata are concrete real-closed subfields (relative algebraic closures) —
-  additionally assumes `RCFModelComplete` (model completeness of RCF, the
-  single remaining Mathlib gap).
+  additionally assumes `RCFModelComplete`, the compatibility name for the
+  ℝ-specialized real-closed-subfield elementarity consequence of RCF model
+  completeness (the single remaining Mathlib gap).
 
 `ICAHStatement` is the conjunction of the four core claims:
 
@@ -33,8 +34,9 @@ The development proves two main theorems, sharing the `NotCH` hypothesis:
    structure with the same carrier and cardinal.
 3. **(M5) Elementary chain**: A `StratumChain` whose direct limit is
    elementarily equivalent to `ℝ` in `LOR`.
-4. **(M6) Limit size**: A `𝔠.ord`-indexed monotone family of
-   intermediate-size subfields of ℝ whose union has cardinality `𝔠`.
+4. **(M6) Cofinal family**: A `𝔠.ord`-indexed monotone family of
+   intermediate-size subfields of ℝ whose union is all of ℝ, and hence has
+   cardinality `𝔠`.
    (The former ℕ-indexed formulation was vacuous by König's theorem — see
    `ICAH.CofinalFamily`, which also proves the sharp `cf(𝔠)` optimality
    results.)
@@ -42,8 +44,9 @@ The development proves two main theorems, sharing the `NotCH` hypothesis:
 ### Hypothesis (not axiom) inventory
 
 The project declares **zero** axioms.  The former axioms `not_CH` and
-`rcfModelComplete` are now named `Prop`s (`NotCH`, `RCFModelComplete`) taken
-as explicit hypotheses, so the audit is the type signature of each theorem
+`rcfModelComplete` are now named `Prop`s (`NotCH`,
+`RCFSubfieldRealElementary`, with compatibility spelling `RCFModelComplete`)
+taken as explicit hypotheses, so the audit is the type signature of each theorem
 and every `#print axioms` below reports only the Lean kernel axioms
 (`propext`, `Classical.choice`, `Quot.sound`).  The `#guard_msgs` blocks turn
 any drift — including a hidden `sorryAx` — into a build failure.
@@ -66,10 +69,12 @@ structure ICAHStatement : Prop where
   /-- M5: There exists a StratumChain whose direct limit is elementarily equivalent to ℝ. -/
   elementary_chain : ∃ (SC : StratumChain), SC.toElemChain.DirectLim ≅[LOR] ℝ
   /-- M6 (honest form): a `𝔠.ord`-indexed monotone family of subfields of ℝ,
-      each of intermediate size, whose union has cardinality `𝔠`. -/
+      each of intermediate size, whose union is all of ℝ and hence has
+      cardinality `𝔠`. -/
   limit_size : ∃ K : ContinuumIdx → Subfield ℝ,
     Monotone K ∧
     (∀ i, aleph0 < #(K i) ∧ #(K i) < continuum) ∧
+    (⋃ i, (K i : Set ℝ)) = Set.univ ∧
     #(⋃ i, (K i : Set ℝ)) = continuum
 
 /-! ### Helper: constant StratumChain on a SubfieldStratum -/
@@ -87,7 +92,8 @@ noncomputable def mkConstantSC (R : SubfieldStratum) : StratumChain where
 /-- **Pillar B**: ICAH's algebraic realization, assembling all milestone
     results.  Takes both hypotheses explicitly:
     - `hCH : NotCH` — the ¬CH regime;
-    - `hMC : RCFModelComplete` — model completeness of RCF (Mathlib gap).
+    - `hMC : RCFModelComplete` — the ℝ-specialized RCF elementarity
+      consequence (Mathlib gap).
 
     Compare `icahElementary` (Pillar A), which needs only `NotCH`. -/
 theorem icahTheorem (hCH : NotCH) (hMC : RCFModelComplete) : ICAHStatement where
@@ -109,7 +115,12 @@ theorem icahTheorem (hCH : NotCH) (hMC : RCFModelComplete) : ICAHStatement where
       fun _ _ => rfl
     exact ⟨SC, ElemChain.tarskiVaughtDirectLimit SC.toElemChain hEmb hCompat⟩
   -- M6: the cofinal family of intermediate-size real-closed subfields covering ℝ.
-  limit_size := cofinal_family_limit_size hCH
+  limit_size := by
+    obtain ⟨K, hmono, _, hbounds, hcover⟩ := exists_cofinal_rc_family hCH
+    have huniv : (⋃ i, (K i : Set ℝ)) = Set.univ :=
+      Set.iUnion_eq_univ_iff.mpr fun x => (hcover x).imp fun _ hi => hi
+    refine ⟨K, hmono, hbounds, huniv, ?_⟩
+    rw [huniv, Cardinal.mk_univ, Cardinal.mk_real]
 
 /-! ### Axiom audits
 

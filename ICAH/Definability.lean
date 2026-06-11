@@ -31,7 +31,9 @@ open FirstOrder FirstOrder.Language FirstOrder.Ring Set
 
 /-! ### Language -/
 
-/-- The language of rings used throughout ICAH. -/
+/-- The first-order language of rings used throughout ICAH.  The historical
+name `LOR` is kept for compatibility with the existing development; despite
+the mnemonic, this is `Language.ring`, with no order symbol. -/
 abbrev LOR : Language := Language.ring
 
 /-! ### Structure instance for ℝ

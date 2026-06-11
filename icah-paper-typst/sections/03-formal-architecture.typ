@@ -7,7 +7,7 @@ This section records the paper-level interpretation of the Lean objects. The goa
 The development is organized as two pillars sharing the cardinal scaffolding:
 
 + *Pillar A* (`ICAH/ElementaryStrata.lean`): strata are elementary substructures of $RR$ in the ring language, produced by downward Löwenheim–Skolem. Elementarity is definitional; the main theorem `icahElementary` needs only `NotCH`.
-+ *Pillar B* (`ICAH/FieldOnStratum.lean` and downstream): strata are concrete real-closed subfields (relative algebraic closures of generated subfields). Elementarity is purchased through the `RCFModelComplete` hypothesis.
++ *Pillar B* (`ICAH/FieldOnStratum.lean` and downstream): strata are concrete real-closed subfields (relative algebraic closures of generated subfields). Elementarity is purchased through `RCFModelComplete`, the compatibility name for the $RR$-specialized real-closed-subfield elementarity consequence of RCF model completeness.
 
 == Core objects
 
@@ -26,11 +26,11 @@ The development is organized as two pillars sharing the cardinal scaffolding:
 The role of `SubfieldStratum` is central. A raw set of real numbers is not automatically closed under addition, multiplication, negation, and inverses. A subfield is. Thus, the field part of the theory is moved from a fragile closure proof obligation into a stable algebraic structure.
 
 #definition[
-  `RCSubfieldStratum` refines `SubfieldStratum` once more by requiring the subfield to be *real closed*. This is the correct hypothesis for model theory: a general subfield of $RR$ (such as $QQ$) is not elementarily embedded in $RR$, while a real-closed subfield is, by model completeness of the theory of real-closed fields.
+  `RCSubfieldStratum` refines `SubfieldStratum` once more by requiring the subfield to be *real closed*. This is the correct hypothesis for model theory: a general subfield of $RR$ (such as $QQ$) is not elementarily embedded in $RR$, while a real-closed subfield is elementarily embedded in $RR$ by the specialized consequence of model completeness used here.
 ]
 
 #definition[
-  In Pillar A, a stratum is an `LOR.ElementarySubstructure ℝ` — Mathlib's bundled elementary substructure. The theorem `exists_elementary_substratum` produces one of every infinite cardinality $kappa <= 2^(aleph_0)$ (optionally containing a prescribed set of size $<= kappa$, via `exists_elementary_substratum_extending`), by instantiating Mathlib's downward Löwenheim–Skolem theorem `exists_elementarySubstructure_card_eq` at $M = RR$. The bridge lemma `elemSubstratumSubfield` shows every such stratum is the carrier of a subfield of $RR$: closure under ring operations is the substructure property, and closure under inverses is one formula transfer ($exists y, x dot y = 1$) along elementarity.
+  In Pillar A, a stratum is an `LOR.ElementarySubstructure ℝ` — Mathlib's bundled elementary substructure. The theorem `exists_elementary_substratum` produces one of every infinite cardinality $kappa <= 2^(aleph_0)$ (optionally containing a prescribed set of size $<= kappa$, via `exists_elementary_substratum_extending`), by instantiating Mathlib's downward Löwenheim–Skolem theorem `exists_elementarySubstructure_card_eq` at $M = RR$. The bridge lemma `elemSubstratumSubfield` shows every such stratum is the carrier of a subfield of $RR$: closure under ring operations is the substructure property, and closure under inverses is one formula transfer ($exists y, x dot y = 1$) along elementarity. A further strengthening, not yet formalized here, is to transfer a ring-language axiomatization of real-closed fields and prove these elementary substrata real closed as well.
 ]
 
 #construction[
@@ -43,7 +43,7 @@ The role of `SubfieldStratum` is central. A raw set of real numbers is not autom
 
 == Definability layer
 
-The language must be stated precisely: `LOR` is an abbreviation for Mathlib's `Language.ring` — the first-order language with function symbols $+, dot, -, 0, 1$ and *no* relation symbols. It is not a language of ordered rings: there is no order symbol. This costs nothing for the intended models, because in a real-closed field the order is definable from the ring structure ($x <= y$ iff $y - x$ is a square), but it matters for honesty about the definability results below.
+The language must be stated precisely: `LOR` is a historical compatibility name for Mathlib's `Language.ring` — the first-order language with function symbols $+, dot, -, 0, 1$ and *no* relation symbols. It is not a language of ordered rings: there is no order symbol. This costs nothing for the intended models, because in a real-closed field the order is definable from the ring structure ($x <= y$ iff $y - x$ is a square), but it matters for honesty about the definability results below. A future cleanup should rename this abbreviation to `LRing`.
 
 In the current development, the graphs of addition and multiplication on $RR$ are proved definable by constructing bounded formulas and transporting realization through Mathlib's language-homomorphism machinery (`graphDefinable_add`, `graphDefinable_mul`).
 

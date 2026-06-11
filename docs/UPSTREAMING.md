@@ -45,8 +45,9 @@ if the RCF discussion takes off).
 >    real closed. Is any of this subsumed by in-progress work on
 >    `Mathlib.FieldTheory.IsRealClosed` or the ordered-field model theory
 >    files?
-> 4. **The gap we did *not* close** (long-term target): model completeness
->    of RCF. Minimized statement in Mathlib vocabulary, where
+> 4. **The gap we did *not* close** (long-term target): the real-subfield
+>    elementarity consequence of model completeness of RCF. Minimized
+>    statement in Mathlib vocabulary, where
 >    `LOR := Language.ring`:
 >
 >    ```lean
@@ -73,7 +74,7 @@ if the RCF discussion takes off).
 | 1 | DLS-based elementary substructures of ℝ at every infinite cardinality `≤ 𝔠` + direct-limit cardinality identity | `ElementaryStrata.exists_elementary_substratum`, `ElemChain.directLimit_card_eq_iSup` | Small | Low — ZFC-pure, self-contained |
 | 2 | Ambient-free Tarski–Vaught chain theorem for `Language.DirectLimit` | `ElemChain.ofLevelElem`, `realize_ofLevel_iff`, `directLim_elementarilyEquivalent` | Medium | Low–medium — generalize ℕ-index to directed orders; relation case no longer vacuous outside the ring language |
 | 3 | Real-closedness lemmas (after Zulip dedup check) | `Real.isRealClosed`, `isRealClosed_of_forall_root`, `relAlgebraic_isRealClosed` | Medium | Medium — naming/placement decisions with `Mathlib.FieldTheory.IsRealClosed` |
-| 4 | Model completeness of RCF (long-term) | discharges `RCFModelComplete` | Large | High — needs QE (Tarski–Seidenberg) or Robinson's test infrastructure |
+| 4 | RCF subfield elementarity (long-term) | discharges `RCFSubfieldRealElementary` / `RCFModelComplete` | Large | High — follows from QE (Tarski–Seidenberg) or Robinson's test infrastructure |
 
 ### Notes per PR
 
@@ -93,9 +94,9 @@ if the RCF discussion takes off).
   via `Polynomial.roots`).
 - **PR 4**: do not attempt as a single PR. Sequence: language/theory of
   ordered fields → RCF axiomatization → existential closedness of RCF
-  embeddings (sign changes + IVP) → Robinson's test → model completeness.
-  Discharging `RCFModelComplete` turns ICAH Pillar B into a `NotCH`-only
-  theorem, matching Pillar A.
+  embeddings (sign changes + IVP) → Robinson's test or QE-grade theorem.
+  Discharging `RCFSubfieldRealElementary` turns ICAH Pillar B into a
+  `NotCH`-only theorem, matching Pillar A.
 
 ---
 
