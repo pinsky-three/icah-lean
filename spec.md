@@ -1,34 +1,51 @@
 # Spec: ICAH Lean — Incremental Proof Formalization
 
-> **Status (June 2026): implemented and superseded.**
+> **Status (June 2026): implemented and superseded — twice.**
 > All requirements R1–R10 below are complete, and the project has since gone
-> beyond this spec's acceptance criteria. `icahTheorem` now compiles with zero
-> sorries and depends on exactly **two** project axioms:
+> beyond this spec's acceptance criteria. After the June 2026 review round the
+> development was restructured around a **two-pillar architecture** with
+> **zero project axioms**:
 >
 > ```
-> 'ICAH.icahTheorem' depends on axioms: [propext, Classical.choice, not_CH, rcfModelComplete, Quot.sound]
+> 'ICAH.icahTheorem'    depends on axioms: [propext, Classical.choice, Quot.sound]
+> 'ICAH.icahElementary' depends on axioms: [propext, Classical.choice, Quot.sound]
 > ```
 >
 > Deltas relative to this spec:
 >
-> - `fieldOnStratum` (R4), `Real.isRealClosed` / real-closedness (R5), and
->   `losDirectLimit` (R6) were all **proved**, not axiomatized. New modules:
->   `ICAH/RealClosed.lean`, `ICAH/CofinalFamily.lean`.
-> - `directLimit_card` (R6) was proved directly; no `ICAH.directLimitCard`
->   axiom was needed.
+> - **Axioms → hypotheses.** `axiom not_CH` and `axiom rcfModelComplete` are
+>   now named `Prop`s (`NotCH` in `ICAH/Axioms.lean`, `RCFModelComplete` in
+>   `ICAH/FieldOnStratum.lean`) threaded as explicit hypotheses. The project
+>   declares zero axioms; `make axiom-count` regression-checks 0.
+> - **Pillar A (new).** `ICAH/ElementaryStrata.lean` proves the semantic ICAH
+>   (`icahElementary`) under `NotCH` alone, via Mathlib's downward
+>   Löwenheim–Skolem theorem: elementary substrata of ℝ at every intermediate
+>   cardinality, whose carriers are subfields.
+> - **Pillar B.** `fieldOnStratum` (R4), `Real.isRealClosed` / real-closedness
+>   (R5) were **proved**, not axiomatized. New modules: `ICAH/RealClosed.lean`,
+>   `ICAH/CofinalFamily.lean`. The chain theorem (R6) was proved and renamed
+>   `tarskiVaughtDirectLimit` (the "Łoś" name was a misattribution); the
+>   **ambient-free** version `ofLevelElem` (the canonical maps into the direct
+>   limit are elementary) is also proved, by induction on bounded formulas.
+> - The ℕ-indexed `directLimit_card` (R6/R7) was **vacuous** under ¬CH by
+>   König's theorem (`cof 𝔠 > ℵ₀`); it was replaced by the unconditional
+>   identity `directLimit_card_eq_iSup`, the closure theorem
+>   `directLimit_card_lt_continuum`, and the sharp `cf(𝔠)` optimality pair in
+>   `ICAH/CofinalFamily.lean` (`cofinal_family_length_lower_bound`,
+>   `exists_cofinal_rc_family_cof_length`). The honest M6 is the
+>   `𝔠.ord`-indexed cofinal family (`exists_cofinal_rc_family`,
+>   `cofinal_family_limit_size`), used by `ICAHStatement`.
 > - Two axioms introduced after this spec (`subfieldIsRealClosed`,
 >   `subfieldStratumElemEmb`) were found to be **mathematically false** as
 >   stated and were deleted, replaced by the sound `RCSubfieldStratum`
->   refinement plus the single `rcfModelComplete` axiom (model completeness of
->   RCF — the one remaining Mathlib gap).
-> - The ℕ-indexed M6 (R7) is vacuous under ¬CH by König's theorem
->   (`cof 𝔠 > ℵ₀`); the honest formulation is the `𝔠.ord`-indexed cofinal
->   family in `ICAH/CofinalFamily.lean` (`exists_cofinal_rc_family`,
->   `cofinal_family_limit_size`), now used by `ICAHStatement`.
-> - The axiom set is enforced in-source by `#guard_msgs in #print axioms
->   icahTheorem` (`ICAH/Main.lean`) and by CI (`.github/workflows/ci.yml`).
+>   refinement plus the `RCFModelComplete` hypothesis (model completeness of
+>   RCF — the one remaining Mathlib gap, used by Pillar B only).
+> - The kernel-only axiom sets are enforced in-source by per-theorem
+>   `#guard_msgs in #print axioms` blocks (`ICAH/Main.lean`) and by CI
+>   (`.github/workflows/ci.yml`).
 >
-> Current state of record: `AGENTS.md`. Next target: prove `rcfModelComplete`.
+> Current state of record: `AGENTS.md`. Upstreaming plan: `docs/UPSTREAMING.md`.
+> Next target: prove `RCFModelComplete`.
 > The text below is preserved as the original working spec.
 
 ## Problem Statement

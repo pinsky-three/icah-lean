@@ -6,10 +6,10 @@
 
 Let $c = 2^(aleph_0)$ denote the cardinality of the continuum. The Continuum Hypothesis states that there is no cardinal $kappa$ satisfying $aleph_0 < kappa < c$. Since Gödel and Cohen, the standard mathematical background is that CH is independent of ZFC, assuming ZFC is consistent @koellner_ch @cohen1966.
 
-The Lean project therefore does not attempt to prove $not "CH"$ in ZFC. Instead, it introduces $not "CH"$ as a named axiom and develops all downstream objects relative to that assumption.
+The Lean project therefore does not attempt to prove $not "CH"$ in ZFC. Instead, it defines $not "CH"$ as a named proposition (`ICAH.NotCH`) and threads it as an explicit hypothesis through every theorem that needs it. The environment contains no project axioms; the per-theorem `#print axioms` audit reports only the Lean kernel axioms.
 
 #proposition[
-  Under the project axiom `ICAH.not_CH`, the cardinal $aleph_1$ witnesses the existence of an intermediate cardinal:
+  Under the hypothesis `ICAH.NotCH`, the cardinal $aleph_1$ witnesses the existence of an intermediate cardinal:
   $ exists kappa, aleph_0 < kappa and kappa < 2^(aleph_0). $
 ]
 
@@ -21,8 +21,12 @@ Real closed fields are the algebraic and model-theoretic setting closest to the 
 
 ICAH uses this background in a restrained way. The code does not merely assume every bare subset of $RR$ is a field. Instead, it introduces `SubfieldStratum`, which requires the carrier set to be the underlying set of a `Subfield RR`. This is the right formal move: closure under field operations is obtained from the subfield structure rather than reconstructed ad hoc.
 
+== Elementary substructures and downward Löwenheim–Skolem
+
+An elementary substructure $S prec M$ satisfies the same first-order formulas as $M$ at parameters from $S$, by definition. The downward Löwenheim–Skolem theorem produces such substructures at every prescribed infinite cardinality between the language size and $\#M$ @chang_keisler. Mathlib formalizes this as `exists_elementarySubstructure_card_eq` (via Skolem functions), and Pillar A of the present development is essentially a specialization of that theorem to $RR$ in the ring language: elementarity of the strata is free by construction.
+
 == Elementary chains and direct limits
 
-An elementary chain is a sequence of structures connected by elementary embeddings. The classical model-theoretic expectation is that unions or directed limits of elementary chains preserve the relevant first-order theory under suitable hypotheses @weiss_model_theory.
+An elementary chain is a sequence of structures connected by elementary embeddings. The Tarski–Vaught elementary chain theorem asserts that the union (or directed limit) of such a chain is an elementary extension of each level @chang_keisler @weiss_model_theory.
 
-The Lean project packages this through `ElemChain`, where each level carries an `LOR`-structure and each successor map is an elementary embedding. The direct limit is then implemented using Mathlib's `Language.DirectLimit` API.
+The Lean project packages this through `ElemChain`, where each level carries an `LOR`-structure and each successor map is an elementary embedding. The direct limit is then implemented using Mathlib's `Language.DirectLimit` API. The project proves the chain theorem *relativized to the ambient model $RR$* (`tarskiVaughtDirectLimit`); an earlier draft misattributed this result to Łoś, whose theorem concerns ultraproducts — the misnomer has been corrected throughout.

@@ -6,5 +6,6 @@ import ICAH.Definability
 import ICAH.RealClosed
 import ICAH.FieldOnStratum
 import ICAH.ElementaryChain
+import ICAH.ElementaryStrata
 import ICAH.CofinalFamily
 import ICAH.Main

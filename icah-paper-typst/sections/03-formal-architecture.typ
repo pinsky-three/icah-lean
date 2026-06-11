@@ -4,6 +4,11 @@
 
 This section records the paper-level interpretation of the Lean objects. The goal is to make the repository legible to mathematicians without forcing them to read Lean code first.
 
+The development is organized as two pillars sharing the cardinal scaffolding:
+
++ *Pillar A* (`ICAH/ElementaryStrata.lean`): strata are elementary substructures of $RR$ in the ring language, produced by downward Löwenheim–Skolem. Elementarity is definitional; the main theorem `icahElementary` needs only `NotCH`.
++ *Pillar B* (`ICAH/FieldOnStratum.lean` and downstream): strata are concrete real-closed subfields (relative algebraic closures of generated subfields). Elementarity is purchased through the `RCFModelComplete` hypothesis.
+
 == Core objects
 
 #definition[
@@ -24,6 +29,10 @@ The role of `SubfieldStratum` is central. A raw set of real numbers is not autom
   `RCSubfieldStratum` refines `SubfieldStratum` once more by requiring the subfield to be *real closed*. This is the correct hypothesis for model theory: a general subfield of $RR$ (such as $QQ$) is not elementarily embedded in $RR$, while a real-closed subfield is, by model completeness of the theory of real-closed fields.
 ]
 
+#definition[
+  In Pillar A, a stratum is an `LOR.ElementarySubstructure ℝ` — Mathlib's bundled elementary substructure. The theorem `exists_elementary_substratum` produces one of every infinite cardinality $kappa <= 2^(aleph_0)$ (optionally containing a prescribed set of size $<= kappa$, via `exists_elementary_substratum_extending`), by instantiating Mathlib's downward Löwenheim–Skolem theorem `exists_elementarySubstructure_card_eq` at $M = RR$. The bridge lemma `elemSubstratumSubfield` shows every such stratum is the carrier of a subfield of $RR$: closure under ring operations is the substructure property, and closure under inverses is one formula transfer ($exists y, x dot y = 1$) along elementarity.
+]
+
 #construction[
   `subfieldToSAF` converts a subfield of $RR$, together with a cardinality witness, into a `SizeAwareField`. The key design choice is to use subtype inheritance for the linear order and Mathlib's subfield ordered-ring instance for the strict ordered ring structure.
 ]
@@ -34,10 +43,12 @@ The role of `SubfieldStratum` is central. A raw set of real numbers is not autom
 
 == Definability layer
 
-The formalization uses an abbreviation `LOR` for the first-order language used in the definability kernel. In the current development, the graphs of addition and multiplication on $RR$ are proved definable by constructing bounded formulas and transporting realization through Mathlib's language-homomorphism machinery.
+The language must be stated precisely: `LOR` is an abbreviation for Mathlib's `Language.ring` — the first-order language with function symbols $+, dot, -, 0, 1$ and *no* relation symbols. It is not a language of ordered rings: there is no order symbol. This costs nothing for the intended models, because in a real-closed field the order is definable from the ring structure ($x <= y$ iff $y - x$ is a square), but it matters for honesty about the definability results below.
+
+In the current development, the graphs of addition and multiplication on $RR$ are proved definable by constructing bounded formulas and transporting realization through Mathlib's language-homomorphism machinery (`graphDefinable_add`, `graphDefinable_mul`).
 
 #remark[
-  The definability results are important because they demonstrate that the paper is not only doing cardinal bookkeeping. It also touches the first-order model-theoretic infrastructure needed to express arithmetic inside a layer.
+  Since `LOR` contains the ring symbols, the graphs of $+$ and $dot$ are *atomic* formulas, and the mathematical content of these definability lemmas is nil. They are presented honestly as what they are: an API stress test of Mathlib's realization machinery — bounded formulas, `Sum`-variable bookkeeping, and the `CompatibleRing` transfer — which is exactly the plumbing later needed for the elementarity transfers in both pillars. Had the language been a pure order language, addition would *not* be definable; the precise choice of `LOR` is therefore load-bearing.
 ]
 
 == Elementary chains
@@ -59,8 +70,10 @@ The lemma `embLE_eq_sysEmb` proves that these two constructions agree as functio
   For an elementary chain `C`, the direct limit `DirectLim C` is defined as `Language.DirectLimit C.obj (...)`, using the underlying directed system of embeddings.
 ]
 
-The direct limit is the formal version of the intended limit field $F_omega$. The project proves both a substantial cardinal theorem for this direct limit (`directLimit_card`) and its elementarity over $RR$ (`losDirectLimit`, via the Tarski--Vaught test); both were previously exposed as gaps and are now theorems.
+The direct limit is the formal version of the intended limit field $F_omega$. The project proves the cardinality identity $\#F_omega = sup_n \#C_n$ (`directLimit_card_eq_iSup`), the closure theorem that countable chains of intermediate strata stay intermediate (`directLimit_card_lt_continuum`, via König), and two elementarity theorems: the relativized version over $RR$ (`tarskiVaughtDirectLimit`, via the Tarski--Vaught test) and the ambient-free version (`ofLevelElem`: the canonical maps into the direct limit are elementary, by induction on bounded formulas). Both elementarity statements were previously exposed as gaps and are now theorems.
 
-== Cofinal family at the continuum
+== Cofinal family at the continuum, and optimality
 
 The $NN$-indexed chain cannot, by itself, exhaust $RR$: König's theorem gives $"cof"(c) > aleph_0$, so a countable increasing union of sets of size $< c$ has size $< c$. The module `ICAH/CofinalFamily.lean` therefore introduces a `𝔠.ord`-indexed monotone family of intermediate-size real-closed subfields whose union is all of $RR$ (`exists_cofinal_rc_family`). The top-level statement `ICAHStatement` uses this family for its limit-size clause, which keeps the formalized claim non-vacuous.
+
+The module also proves that $"cof"(c)$ is the *exact* threshold: any family of subsets of $RR$ of size $< c$ covering $RR$ has at least $"cof"(c)$ members (`cofinal_family_length_lower_bound`), and a monotone real-closed covering family of length exactly $"cof"(c)$ exists (`exists_cofinal_rc_family_cof_length`, by composing the `𝔠.ord`-indexed family with a fundamental sequence). See Section 4.

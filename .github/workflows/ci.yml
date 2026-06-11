@@ -27,9 +27,11 @@ jobs:
       - name: Get Mathlib cache
         run: lake exe cache get
 
-      # The axiom audit is enforced inside the build: ICAH/Main.lean contains a
-      # `#guard_msgs in #print axioms icahTheorem` block that fails compilation
-      # if the axiom set ever drifts from {not_CH, rcfModelComplete} + kernel.
+      # The axiom audit is enforced inside the build: ICAH/Main.lean contains
+      # per-theorem `#guard_msgs in #print axioms` blocks that fail compilation
+      # if any flagship result ever depends on more than the Lean kernel axioms
+      # (propext, Classical.choice, Quot.sound). The project declares zero
+      # axioms; NotCH and RCFModelComplete are explicit hypotheses.
       - name: Build
         run: lake build
 
@@ -37,4 +39,10 @@ jobs:
         run: |
           count=$(grep -rn "sorry" ICAH/ ICAH.lean --include="*.lean" | grep -v "sorryAx\|-- " | wc -l | tr -d ' ')
           echo "sorry count: $count"
+          test "$count" = "0"
+
+      - name: Axiom count (must be 0)
+        run: |
+          count=$(grep -rn "^axiom " ICAH/ --include="*.lean" | wc -l | tr -d ' ')
+          echo "project axiom count: $count"
           test "$count" = "0"

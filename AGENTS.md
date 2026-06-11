@@ -12,17 +12,20 @@ icah-lean/
 ├── ICAH.lean                  # Umbrella import (all modules)
 ├── ICAH/
 │   ├── Prelude.lean           # Smoke tests; Mathlib availability check
-│   ├── Axioms.lean            # Global set-theoretic axioms (not_CH)
+│   ├── Axioms.lean            # NotCH : Prop (hypothesis, NOT an axiom) + intermediate cardinal
 │   ├── SizeAwareField.lean    # SizeAwareField structure
-│   ├── Strata.lean            # Stratum structure + M1 cardinal lemmas
+│   ├── Strata.lean            # Stratum structure + M1 cardinal lemmas + König helper
 │   ├── Definability.lean      # LOR definability kernel (M2)
 │   ├── RealClosed.lean        # IsRealClosed ℝ + root-closed subfield criterion (M4)
 │   ├── FieldOnStratum.lean    # SubfieldStratum, relAlgebraic, exists_rc_subfield,
-│   │                          #   fieldOnStratum theorem, rcfModelComplete axiom (M3+M4)
-│   ├── ElementaryChain.lean   # ElemChain, losDirectLimit theorem, directLimit_card (M5)
-│   ├── CofinalFamily.lean     # 𝔠.ord-indexed cofinal RC subfield family (honest M6)
-│   └── Main.lean              # ICAHStatement + icahTheorem + #guard_msgs axiom audit
-├── .github/workflows/ci.yml   # CI: build + axiom audit + sorry count
+│   │                          #   fieldOnStratum theorem, RCFModelComplete : Prop (M3+M4)
+│   ├── ElementaryChain.lean   # ElemChain, tarskiVaughtDirectLimit, ambient-free
+│   │                          #   ofLevelElem, directLimit_card_eq_iSup/_lt_continuum (M5)
+│   ├── ElementaryStrata.lean  # Pillar A: DLS elementary substrata, icahElementary
+│   ├── CofinalFamily.lean     # 𝔠.ord-indexed cofinal RC family + cf(𝔠) optimality (M6)
+│   └── Main.lean              # ICAHStatement + icahTheorem + per-theorem #guard_msgs audits
+├── .github/workflows/ci.yml   # CI: build + axiom audit + sorry count + axiom count
+├── docs/UPSTREAMING.md        # Zulip draft + Mathlib PR sequence
 ├── Makefile                   # Build targets (see below)
 ├── lakefile.lean              # Lake project config (Mathlib dependency)
 ├── lean-toolchain             # Lean version pin
@@ -33,9 +36,21 @@ icah-lean/
 
 ```
 Axioms ──► SizeAwareField ──► Strata ──► Definability ──► RealClosed ──► FieldOnStratum
-                                                              ├──► ElementaryChain ──► Main
-                                                              └──► CofinalFamily ────► Main
+                                                              ├──► ElementaryChain ───► Main
+                                                              ├──► ElementaryStrata ──► Main
+                                                              └──► CofinalFamily ─────► Main
 ```
+
+### Two-pillar architecture
+
+* **Pillar A** (`ElementaryStrata.lean`): the *semantic* ICAH. Strata are
+  elementary substructures of ℝ produced by Mathlib's downward
+  Löwenheim–Skolem theorem at every intermediate cardinality; elementarity is
+  free by construction. Main theorem: `icahElementary (hCH : NotCH)`.
+* **Pillar B** (`FieldOnStratum.lean` + `Main.lean`): the *algebraic
+  realization*. Strata are relative algebraic closures of generated subfields,
+  with native real-closed instances. Main theorem:
+  `icahTheorem (hCH : NotCH) (hMC : RCFModelComplete)`.
 
 ---
 
@@ -71,33 +86,43 @@ curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh 
 | File | Declarations | Status |
 |---|---|---|
 | `Prelude.lean` | 1 example | ✅ Compiles |
-| `Axioms.lean` | 1 axiom, 1 theorem | ✅ `not_CH` + `exists_intermediate_cardinal` |
+| `Axioms.lean` | 1 def (`NotCH : Prop`), 2 theorems | ✅ Hypothesis + `exists_intermediate_cardinal` |
 | `SizeAwareField.lean` | 1 structure, 1 lemma | ✅ Compiles |
-| `Strata.lean` | 1 structure, 5 lemmas, 1 def | ✅ M1 complete (no axioms) |
+| `Strata.lean` | 1 structure, 6 lemmas, 1 def | ✅ M1 complete + König helper `aleph0_lt_cof_ord_continuum` |
 | `Definability.lean` | 3 defs, 7 lemmas, 1 instance | ✅ M2 complete |
 | `RealClosed.lean` | 2 theorems + helpers | ✅ `Real.isRealClosed` **proved** (IVT + sqrt) |
-| `FieldOnStratum.lean` | 3 structures, ~12 defs/lemmas/theorems, **1 axiom** | ✅ M3+M4: `fieldOnStratum`, `exists_rc_subfield`, `relAlgebraic_isRealClosed` proved |
-| `ElementaryChain.lean` | 2 structures, ~9 defs/lemmas/theorems | ✅ M5: `losDirectLimit` **proved** (Tarski–Vaught) |
-| `CofinalFamily.lean` | 2 theorems | ✅ Honest M6: cofinal RC family covering ℝ |
-| `Main.lean` | 1 structure, 1 def, 1 theorem | ✅ `icahTheorem` proved; axiom set locked by `#guard_msgs` |
+| `FieldOnStratum.lean` | 3 structures, 1 def (`RCFModelComplete : Prop`), ~12 defs/lemmas/theorems | ✅ M3+M4: `fieldOnStratum`, `exists_rc_subfield`, `relAlgebraic_isRealClosed` proved |
+| `ElementaryChain.lean` | 2 structures, ~14 defs/lemmas/theorems | ✅ M5: `tarskiVaughtDirectLimit` + ambient-free `ofLevelElem` **proved**; `directLimit_card_eq_iSup`, `directLimit_card_lt_continuum` |
+| `ElementaryStrata.lean` | 1 structure, ~8 defs/lemmas/theorems | ✅ Pillar A: `exists_elementary_substratum` (DLS), `elemSubstratumSubfield`, `icahElementary` |
+| `CofinalFamily.lean` | 5 theorems + helpers | ✅ Honest M6 + cf(𝔠) optimality pair |
+| `Main.lean` | 1 structure, 1 def, 1 theorem, 15 audits | ✅ `icahTheorem` proved; kernel-only axiom sets locked by per-theorem `#guard_msgs` |
 
-### Named axioms (run `make axiom-count` to verify)
+### Hypotheses (the project declares **zero** axioms; `make axiom-count` = 0)
 
-| Axiom | File | Status |
+| Hypothesis (`Prop`) | File | Role |
 |---|---|---|
-| `ICAH.not_CH` | `Axioms.lean` | Global assumption (¬CH) — definitional for ICAH |
-| `ICAH.rcfModelComplete` | `FieldOnStratum.lean` | Mathlib gap: model completeness of RCF (Tarski–Seidenberg); elementary embedding of a real-closed subfield into ℝ |
+| `ICAH.NotCH` | `Axioms.lean` | The ¬CH regime (`continuum ≠ aleph 1`) — definitional for ICAH; consumed by both pillars |
+| `ICAH.RCFModelComplete` | `FieldOnStratum.lean` | Mathlib gap: model completeness of RCF (Tarski–Seidenberg); elementary embedding of a real-closed subfield into ℝ. Pillar B only |
 
 Former axioms, now resolved:
 
 | Former axiom | Resolution |
 |---|---|
+| `ICAH.not_CH` | **Converted to hypothesis** `NotCH : Prop`, threaded explicitly |
+| `ICAH.rcfModelComplete` | **Converted to hypothesis** `RCFModelComplete : Prop`, threaded explicitly (Pillar B only) |
 | `ICAH.fieldOnStratum` | **Proved** (`FieldOnStratum.lean`): Equiv-transport from a real-closed subfield of cardinality `R.κ` |
 | `ICAH.Real.isRealClosed` | **Proved** (`RealClosed.lean`): `of_linearOrderedField` + `Real.sqrt` + IVT |
 | `ICAH.subfieldIsRealClosed` | **Deleted — was false** (ℚ is a subfield of ℝ, not real closed) |
 | `ICAH.subfieldStratumExists` | **Proved** (`FieldOnStratum.lean`): `exists_rc_subfield` via `relAlgebraic ∘ Subfield.closure` |
-| `ICAH.ElemChain.losDirectLimit` | **Proved** (`ElementaryChain.lean`): `DirectLimit.lift` + Tarski–Vaught test |
-| `ICAH.subfieldStratumElemEmb` | **Deleted — was false** for arbitrary subfields; replaced by `rcfModelComplete` (real-closed hypothesis added) |
+| `ICAH.ElemChain.losDirectLimit` | **Proved & renamed** `tarskiVaughtDirectLimit` (`ElementaryChain.lean`): `DirectLimit.lift` + Tarski–Vaught test (Łoś was a misattribution); ambient-free version `ofLevelElem` also proved |
+| `ICAH.subfieldStratumElemEmb` | **Deleted — was false** for arbitrary subfields; replaced by `RCFModelComplete` (real-closed hypothesis added) |
+
+Removed as **vacuous**: the ℕ-indexed `directLimit_card` (hypotheses
+unsatisfiable under ¬CH since `cof 𝔠 > ℵ₀` by König). Replaced by the
+unconditional `directLimit_card_eq_iSup`, `directLimit_card_lt_continuum`,
+`directLimit_intermediate`, and the sharp optimality pair
+`cofinal_family_length_lower_bound` / `exists_cofinal_rc_family_cof_length`
+(least covering-family length = `cf(𝔠)`).
 
 ---
 
@@ -243,23 +268,28 @@ Every theorem that is part of the ICAH claim should be checked with:
 #print axioms icahTheorem
 ```
 
-The expected output is locked into the build via `#guard_msgs` in `Main.lean`:
+The expected output is locked into the build via per-theorem `#guard_msgs`
+blocks in `Main.lean` (15 audits covering both pillars and all flagship
+building blocks):
 ```
-'ICAH.icahTheorem' depends on axioms: [propext, Classical.choice, not_CH, rcfModelComplete, Quot.sound]
+'ICAH.icahTheorem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ICAH.icahElementary' depends on axioms: [propext, Classical.choice, Quot.sound]
 ```
 
-Only two project axioms remain: `ICAH.not_CH` (the ¬CH assumption, definitional
-for ICAH) and `ICAH.rcfModelComplete` (model completeness of RCF). If the axiom
-set drifts — including a hidden `sorryAx` — `lake build` fails.
+The project declares **zero** axioms: `NotCH` and `RCFModelComplete` are
+explicit hypotheses visible in type signatures, so every audit reports only
+the Lean kernel axioms. If any axiom set drifts — including a hidden
+`sorryAx` — `lake build` fails.
 
 ---
 
-## Closing the remaining axiom gap
+## Closing the remaining hypothesis gap
 
-### `ICAH.rcfModelComplete` (the only Mathlib gap)
+### `ICAH.RCFModelComplete` (the only Mathlib gap)
 
-**What**: a real-closed subfield `K ⊆ ℝ` is an *elementary* substructure of ℝ in
-the language of ordered rings (`K ↪ₑ[LOR] ℝ`).
+**What**: a real-closed subfield `K ⊆ ℝ` is an *elementary* substructure of ℝ
+in the first-order ring language (`K ↪ₑ[LOR] ℝ`; note `LOR := Language.ring` —
+order is ring-definable in real-closed fields).
 
 **Mathematical content**: model completeness of the theory of real-closed
 fields, a consequence of Tarski–Seidenberg quantifier elimination. True theorem;
@@ -281,10 +311,19 @@ which exist at every intermediate cardinality by `exists_rc_subfield`.
 
 ### A note on M6 and König's theorem
 
-The ℕ-indexed `directLimit_card` hypothesis set (`∀ n, #(obj n) < 𝔠` and
-`⨆ n, #(obj n) = 𝔠`) is unsatisfiable since `cof 𝔠 > ℵ₀`. The honest M6 is
-`ICAH.CofinalFamily.exists_cofinal_rc_family`: a `𝔠.ord`-indexed monotone family
-of intermediate-size real-closed subfields whose union is all of ℝ.
+The former ℕ-indexed `directLimit_card` hypothesis set (`∀ n, #(obj n) < 𝔠` and
+`⨆ n, #(obj n) = 𝔠`) was unsatisfiable since `cof 𝔠 > ℵ₀`
+(`aleph0_lt_cof_ord_continuum` in `Strata.lean`); the theorem has been deleted.
+The honest M6 is `ICAH.exists_cofinal_rc_family`: a `𝔠.ord`-indexed monotone
+family of intermediate-size real-closed subfields whose union is all of ℝ.
+Sharpness: the least possible length of such a family is exactly `cf(𝔠)`
+(`cofinal_family_length_lower_bound` + `exists_cofinal_rc_family_cof_length`).
+
+### Upstreaming
+
+See `docs/UPSTREAMING.md` for the Zulip post draft and the Mathlib PR
+sequence (DLS substrata + cardinality identity → ambient-free chain theorem →
+real-closedness lemmas → long-term RCF model completeness).
 
 ---
 
