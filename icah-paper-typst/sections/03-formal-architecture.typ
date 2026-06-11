@@ -7,7 +7,7 @@ This section records the paper-level interpretation of the Lean objects. The goa
 The development is organized as two pillars sharing the cardinal scaffolding:
 
 + *Pillar A* (`ICAH/ElementaryStrata.lean`): strata are elementary substructures of $RR$ in the ring language, produced by downward Löwenheim–Skolem. Elementarity is definitional; the main theorem `icahElementary` needs only `NotCH`.
-+ *Pillar B* (`ICAH/FieldOnStratum.lean` and downstream): strata are concrete real-closed subfields (relative algebraic closures of generated subfields). Elementarity is purchased through `RCFModelComplete`, the compatibility name for the $RR$-specialized real-closed-subfield elementarity consequence of RCF model completeness.
++ *Pillar B* (`ICAH/FieldOnStratum.lean` and downstream): strata are concrete real-closed subfields (relative algebraic closures of generated subfields). Elementarity is purchased through `RCFModelComplete`, the compatibility name for the $RR$-specialized consequence that real-closed subfield inclusions into $RR$ are elementary.
 
 == Core objects
 
@@ -26,7 +26,7 @@ The development is organized as two pillars sharing the cardinal scaffolding:
 The role of `SubfieldStratum` is central. A raw set of real numbers is not automatically closed under addition, multiplication, negation, and inverses. A subfield is. Thus, the field part of the theory is moved from a fragile closure proof obligation into a stable algebraic structure.
 
 #definition[
-  `RCSubfieldStratum` refines `SubfieldStratum` once more by requiring the subfield to be *real closed*. This is the correct hypothesis for model theory: a general subfield of $RR$ (such as $QQ$) is not elementarily embedded in $RR$, while a real-closed subfield is elementarily embedded in $RR$ by the specialized consequence of model completeness used here.
+  `RCSubfieldStratum` refines `SubfieldStratum` once more by requiring the subfield to be *real closed*. This is the correct hypothesis for model theory: a general subfield of $RR$ (such as $QQ$) is not elementarily embedded in $RR$, while the inclusion of a real-closed subfield into $RR$ is elementary by the specialized consequence of model completeness used here.
 ]
 
 #definition[

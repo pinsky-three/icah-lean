@@ -30,7 +30,7 @@ The main assembly theorem `ICAH.icahTheorem` **compiles with zero sorries** and 
 | Hypothesis | Role |
 |---|---|
 | `ICAH.NotCH` | The ¬CH assumption — definitional for ICAH, not a Mathlib gap |
-| `ICAH.RCFSubfieldRealElementary` / `ICAH.RCFModelComplete` | The ℝ-specialized consequence that a *real‑closed* subfield of ℝ is an elementary substructure. This follows from model completeness of RCF (Tarski–Seidenberg) and is the single remaining Mathlib gap |
+| `ICAH.RCFSubfieldRealElementary` / `ICAH.RCFModelComplete` | The ℝ-specialized consequence that the inclusion of any *real‑closed* subfield of ℝ into ℝ is elementary. This follows from model completeness of RCF (Tarski–Seidenberg) and is the single remaining Mathlib gap |
 
 Highlights of what is **proved** (no axioms beyond the above):
 
@@ -137,7 +137,7 @@ is now a **theorem** in `ICAH/FieldOnStratum.lean`. The construction follows pat
 - `ElemChain` packages a directed system of elementary embeddings `F_m ↪ₑ F_n`; `DirectLim` is its `Language.DirectLimit`.
 - `ElemChain.tarskiVaughtDirectLimit` (**proved**, formerly an axiom): if every level embeds elementarily and compatibly into ℝ, the direct limit is elementarily equivalent to ℝ. Proof: `Language.DirectLimit.lift` + Tarski–Vaught test.
 - `directLimit_card_eq_iSup` and `directLimit_card_lt_continuum` (**proved**): cardinal accounting for countable direct limits, including the closure theorem that countable chains of intermediate strata stay below `𝔠`.
-- `RCSubfieldStratum` bundles a stratum whose carrier is a **real‑closed** subfield; the hypothesis `RCFSubfieldRealElementary` / `RCFModelComplete` supplies the elementary embedding into ℝ. This is the only remaining gap.
+- `RCSubfieldStratum` bundles a stratum whose carrier is a **real‑closed** subfield; the hypothesis `RCFSubfieldRealElementary` / `RCFModelComplete` supplies the inclusion-form elementary embedding into ℝ. This is the only remaining gap.
 - **Honest M6** (`ICAH/CofinalFamily.lean`): since `cof 𝔠 > ℵ₀` (König), no ℕ‑indexed chain of intermediate‑size strata can union to ℝ. Instead, `exists_cofinal_rc_family` builds a `𝔠.ord`‑indexed monotone family of intermediate‑size real‑closed subfields with union ℝ, and `cofinal_family_limit_size` shows the union has cardinality `𝔠`.
 
 ### 2.5 Optional physics interface (non‑blocking)
@@ -208,7 +208,7 @@ Open `ICAH/Prelude.lean` to confirm the environment is healthy. CI (`.github/wor
    `Real.isRealClosed`, `isRealClosed_of_forall_root`, `relAlgebraic_isRealClosed` (`ICAH/RealClosed.lean`, `ICAH/FieldOnStratum.lean`).
 
 5. **M5 – Elementary chain** — ✅ **done modulo `RCFSubfieldRealElementary`.**  
-   `tarskiVaughtDirectLimit` proved (DirectLimit.lift + Tarski–Vaught); the embedding of an `RCSubfieldStratum` into ℝ is elementary by the `RCFSubfieldRealElementary` / `RCFModelComplete` hypothesis (Tarski–Seidenberg consequence, the one Mathlib gap).
+   `tarskiVaughtDirectLimit` proved (DirectLimit.lift + Tarski–Vaught); the inclusion of the real-closed subfield underlying an `RCSubfieldStratum` into ℝ is elementary by the `RCFSubfieldRealElementary` / `RCFModelComplete` hypothesis (Tarski–Seidenberg consequence, the one Mathlib gap).
 
 6. **M6 – Size of the limit** — ✅ **done (reformulated).**  
    `directLimit_card_eq_iSup` and `directLimit_card_lt_continuum` proved for ℕ‑chains; the cofinal statement is the `𝔠.ord`‑indexed `exists_cofinal_rc_family` + `cofinal_family_limit_size`, avoiding the König obstruction.

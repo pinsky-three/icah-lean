@@ -29,7 +29,7 @@ The development is organized as two pillars that realize the same informal pictu
 
 #theorem[
   *(Theorem 2 — Pillar B, algebraic realization; Lean: `icahTheorem`.)*
-  Assume $not "CH"$ and additionally `RCFModelComplete` (compatibility name for the $RR$-specialized consequence that every real-closed subfield of $RR$ is an elementary substructure in the ring language; it follows from model completeness of RCF, the single remaining Mathlib gap). Then the four clauses of `ICAHStatement` hold:
+  Assume $not "CH"$ and additionally `RCFModelComplete` (compatibility name for the $RR$-specialized consequence that the inclusion of every real-closed subfield of $RR$ into $RR$ is elementary in the ring language; it follows from model completeness of RCF, the single remaining Mathlib gap). Then the four clauses of `ICAHStatement` hold:
 
   + *(M1)* for every ordinal $n$ there is a stratum $R$ with index $n$ and $aleph_0 < \#R < 2^(aleph_0)$;
   + *(M3)* every stratum carries a size-aware ordered-field structure with matching carrier and cardinal;

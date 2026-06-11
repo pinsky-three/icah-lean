@@ -23,7 +23,7 @@
 | `exists_rc_subfield` | RC subfields of every infinite cardinality ≤ 𝔠 | Proved | Strengthens former `subfieldStratumExists` axiom |
 | `fieldOnStratum` | Field on arbitrary stratum | Proved | Equiv-transport; formerly an axiom |
 | `RCSubfieldStratum` | Real-closed field-bearing stratum | Definition | Sound replacement for deleted false axioms |
-| `RCFSubfieldRealElementary` / `RCFModelComplete` | Real-closed subfields of ℝ embed elementarily | Hypothesis / Mathlib gap | Specialized consequence of RCF model completeness; the single remaining gap |
+| `RCFSubfieldRealElementary` / `RCFModelComplete` | Real-closed subfield inclusions into ℝ are elementary | Hypothesis / Mathlib gap | Specialized consequence of RCF model completeness; the single remaining gap |
 | `exists_cofinal_rc_family` | Honest M6: cofinal RC family | Proved | 𝔠.ord-indexed; avoids König obstruction |
 | `cofinal_family_limit_size` | Union has cardinality 𝔠 | Proved | Limit-size clause of `ICAHStatement` |
 | `ICAHStatement` | Top-level Prop-valued statement | Definition | Core claims M1/M3/M5/M6 (M6 via cofinal family) |

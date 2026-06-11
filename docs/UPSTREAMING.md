@@ -51,10 +51,11 @@ if the RCF discussion takes off).
 >    `LOR := Language.ring`:
 >
 >    ```lean
->    /-- Every real-closed subfield of ℝ is an elementary substructure
+>    /-- The inclusion of every real-closed subfield of ℝ into ℝ is elementary
 >        (order is ring-definable, so the ring language suffices). -/
 >    theorem rcf_subfield_elementary (K : Subfield ℝ)
->        (hK : IsRealClosed K) : Nonempty (K ↪ₑ[Language.ring] ℝ)
+>        (hK : IsRealClosed K) :
+>        ∃ e : K ↪ₑ[Language.ring] ℝ, ∀ x : K, e x = (x : ℝ)
 >    ```
 >
 >    The natural route is Robinson's test modeled on the ACF development

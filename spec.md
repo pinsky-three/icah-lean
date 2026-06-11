@@ -1,4 +1,321 @@
-# Spec: ICAH Lean — Incremental Proof Formalization
+# Spec: ICAH Lean — Next PR: Inclusion-Form RCF Gap and Pillar A Strengthening
+
+> **Status: required implementation slice complete on this branch.**
+> This spec responds to the review of PR #6 (`referee-pass-alignment`,
+> commit `bf33506`). PR #6 correctly implemented the statement-packaging and
+> documentation slice of the second-round review, but the review identified one
+> statement-level mismatch and two still-open mathematical strengthening paths.
+>
+> The required R1–R5 slice has been implemented: the RCF gap is now stated over
+> bare subfields in inclusion form, the bundled project helper is derived from
+> that statement, PR #6's M6 proof has been verified, and docs have been
+> aligned. Optional R6–R7 theorem work remains deferred.
+
+## Problem Statement
+
+PR #6 introduced `RCFSubfieldRealElementary` as the truth-in-naming primary
+name for the remaining RCF model-theory gap, with `RCFModelComplete` retained
+as compatibility spelling. However, the current proposition is still weaker
+and less reusable than the paper prose claims:
+
+```lean
+def RCFSubfieldRealElementary : Prop :=
+  ∀ R : RCSubfieldStratum,
+    Nonempty (R.toSubfieldStratum.toStratum.carrier ↪ₑ[LOR] ℝ)
+```
+
+This asserts existence of some elementary embedding from the bundled carrier to
+`ℝ`. The paper and upstreaming notes instead describe the inclusion of a
+real-closed subfield `K ⊆ ℝ` as elementary. Those are not the same statement.
+The existence form is enough for the current constant-chain witness, but it is
+not the right Mathlib-facing theorem and will not support a genuinely
+increasing chain of real-closed subfields whose transition maps are inclusions.
+
+The next PR should fix this mismatch and, if feasible, start closing the
+remaining "Pillar A undersells itself" findings:
+
+1. Restate the RCF gap over a bare `K : Subfield ℝ`, not the project-specific
+   `RCSubfieldStratum` bundle.
+2. Make the claimed elementary map the actual inclusion/subtype map, not an
+   arbitrary existing elementary embedding.
+3. Keep project-facing compatibility for `RCFModelComplete`.
+4. Optionally prove or scaffold the next Pillar A strengthening:
+   elementary substrata are real closed, by transferring a ring-language
+   axiomatization of real-closed fields.
+5. Optionally prove the directed-union elementary-substructure lemma needed to
+   build monotone cofinal families of elementary substrata.
+
+## Requirements
+
+### R1 — Replace the Project-Bundled Gap With a Bare-Subfield Gap
+
+Define a Mathlib-facing proposition over bare subfields:
+
+```lean
+def RCFSubfieldRealElementary : Prop :=
+  ∀ (K : Subfield ℝ), IsRealClosed K →
+    -- inclusion/subtype map K → ℝ is elementary in Language.ring
+    ...
+```
+
+The target must quantify over `K : Subfield ℝ` and its `IsRealClosed K`
+witness only. It must not require:
+
+- `RCSubfieldStratum`
+- intermediate-cardinality bounds
+- an ordinal index
+- `Stratum` packaging
+
+### R2 — Assert Inclusion Elementarity, Not Mere Embeddability
+
+The proposition must state that the canonical subtype/inclusion map
+`K → ℝ` is elementary. It must not merely assert `Nonempty (K ↪ₑ[LOR] ℝ)`.
+
+Implementation should search the existing Mathlib API for the most direct
+statement shape. Preferred possibilities, in order:
+
+1. A theorem/field on the canonical first-order embedding induced by the
+   subfield inclusion, if Mathlib exposes one.
+2. A bundled `K ↪ₑ[LOR] ℝ` whose `toFun` is definitionally or propositionally
+   equal to `Subtype.val`.
+3. A proposition pairing the elementary embedding with a proof that its
+   function is the inclusion:
+
+   ```lean
+   ∃ e : K ↪ₑ[LOR] ℝ, ∀ x : K, e x = (x : ℝ)
+   ```
+
+Use the least awkward version that compiles cleanly and makes the inclusion
+content explicit.
+
+### R3 — Derive the Bundled Project Consequence
+
+Add a small helper deriving the current project-facing form for
+`RCSubfieldStratum` from the bare-subfield gap. Existing uses in `Main.lean`
+should continue to extract an elementary embedding for a bundled
+`RCSubfieldStratum`.
+
+If the proposition uses an existential inclusion-form embedding, the helper may
+return the embedding component. If it uses a canonical embedding type directly,
+wrap it in the existing extraction API.
+
+### R4 — Maintain Compatibility Without Reintroducing Ambiguity
+
+Keep `RCFModelComplete` as a compatibility spelling for now, but make the new
+name primary in source comments, README, paper draft, and upstreaming notes.
+
+If Lean accepts the attribute cleanly, mark the compatibility spelling as
+deprecated:
+
+```lean
+@[deprecated RCFSubfieldRealElementary]
+def RCFModelComplete : Prop := RCFSubfieldRealElementary
+```
+
+If the deprecation attribute is noisy or incompatible with current uses, do not
+force it in this PR; instead leave a clear docstring stating that
+`RCFModelComplete` is compatibility-only.
+
+### R5 — Harden the PR #6 M6 Proof After Toolchain Verification
+
+Once Lean is available, verify the new `ICAHStatement.limit_size` proof from
+PR #6. If elaboration fails, try only the smallest local changes:
+
+- destructure `exists_cofinal_rc_family` according to its actual constructor
+  order;
+- replace `(hcover x).imp fun _ hi => hi` with a more explicit witness proof if
+  coercion elaboration fails;
+- replace `rw [huniv, Cardinal.mk_univ, Cardinal.mk_real]` with
+  `simp only [huniv, Cardinal.mk_univ, Cardinal.mk_real]` or
+  `Cardinal.mk_congr` if rewriting under subtype cardinality fails.
+
+Do not refactor the cofinal-family construction while fixing this proof.
+
+### R6 — Optional: Prove `elemSubstratum_isRealClosed`
+
+If the inclusion-form gap change is straightforward, attempt the arXiv-blocking
+Pillar A strengthening:
+
+```lean
+theorem elemSubstratum_isRealClosed
+    (S : LOR.ElementarySubstructure ℝ) :
+    IsRealClosed (elemSubstratumSubfield S) := ...
+```
+
+Expected architecture:
+
+1. Define or reuse a ring-language theory/schema for real-closed fields.
+2. Prove `ℝ` satisfies the schema.
+3. Transfer each sentence through `S.isElementary`.
+4. Convert satisfaction of the schema on `S` into `IsRealClosed` for the
+   subfield produced by `elemSubstratumSubfield`.
+
+This is proof-heavy. If it requires substantial first-order schema plumbing,
+stop after a precise blocker report and do not mask the gap with a new axiom.
+
+### R7 — Optional: Directed Union of Elementary Substructures
+
+If time remains after R1–R5, specify or prove the model-theoretic helper needed
+for a monotone cofinal elementary-strata family:
+
+```lean
+-- schematic target
+theorem directed_iUnion_elementarySubstructure
+    (S : ι → L.ElementarySubstructure M)
+    (hdirected : Directed (· ≤ ·) S) :
+    ... := ...
+```
+
+Expected proof route: Tarski–Vaught. Parameters are finite, so they land in one
+directed member; that member supplies the witness by elementarity.
+
+This theorem should be treated as a separate Mathlib-facing contribution if it
+grows beyond a small local lemma.
+
+## Constraints
+
+- Do not add project axioms.
+- Do not add `sorry`.
+- Do not weaken the current zero-axiom audit.
+- Do not merge or rely on unrelated `.devcontainer/` changes currently present
+  in the worktree.
+- Keep PR scope focused. R1–R5 are required; R6–R7 are optional and may become
+  follow-up PRs if they require large schema or directed-colimit infrastructure.
+- Preserve the existing two-pillar architecture:
+  - Pillar A remains `NotCH`-only.
+  - Pillar B remains conditional on the RCF subfield-elementarity hypothesis
+    until the Mathlib gap is actually proved.
+- Keep `LOR` as a compatibility abbreviation for now, but continue documenting
+  that it is `Language.ring`, not an ordered-ring language.
+- Run Lean through the project wrapper when the toolchain is available:
+  `make build`, `make sorry-count`, and `make axiom-count`.
+
+## Architecture
+
+### Lean Source Changes
+
+Primary files:
+
+- `ICAH/FieldOnStratum.lean`
+  - redefine `RCFSubfieldRealElementary` over bare subfields;
+  - keep or deprecate `RCFModelComplete`;
+  - update `RCFModelComplete.emb` or add a new extraction helper.
+- `ICAH/Main.lean`
+  - adjust only if the extraction helper type changes;
+  - verify the strengthened M6 proof from PR #6.
+- `ICAH/ElementaryStrata.lean`
+  - optional home for `elemSubstratum_isRealClosed`;
+  - optional imports may be needed for first-order theory/schema work.
+
+Documentation files:
+
+- `README.md`
+- `docs/UPSTREAMING.md`
+- `icah-paper-typst/main.typ`
+- `icah-paper-typst/sections/01-introduction.typ`
+- `icah-paper-typst/sections/03-formal-architecture.typ`
+- `icah-paper-typst/sections/05-axiom-inventory.typ`
+- `icah-paper-typst/sections/08-conclusion.typ`
+- `icah-paper-typst/notes/lean-to-paper-map.md`
+
+### Dependency Direction
+
+The bare-subfield proposition belongs below `RCSubfieldStratum` only because it
+uses `IsRealClosed` and `LOR`, both already available in `FieldOnStratum.lean`.
+No downstream file should need to know about the internal `RCSubfieldStratum`
+packaging to state the Mathlib-facing gap.
+
+If `elemSubstratum_isRealClosed` is attempted, avoid creating a dependency from
+`FieldOnStratum.lean` back to `ElementaryStrata.lean`. The theorem should live
+in `ElementaryStrata.lean` or a new later module if imports become cyclic.
+
+## Implementation Steps
+
+1. Restore a verified baseline on the PR branch:
+   - install or expose the Lean toolchain if needed;
+   - run `make build`;
+   - record any existing failures before edits.
+2. Inspect Mathlib APIs for first-order embeddings induced by subfield
+   inclusions:
+   - search local `.lake/packages/mathlib` if available;
+   - use `#check` probes in a temporary scratch block if needed, removing them
+     before commit.
+3. Rewrite `RCFSubfieldRealElementary` to quantify over bare `K : Subfield ℝ`
+   and assert inclusion elementarity.
+4. Update `RCFModelComplete.emb` or add a new helper deriving the bundled
+   `RCSubfieldStratum` embedding used by `Main.lean`.
+5. Run `lake env lean ICAH/FieldOnStratum.lean` and fix only local type errors.
+6. Run `lake env lean ICAH/Main.lean` and harden the PR #6 M6 proof if needed.
+7. Update documentation so the paper and README say "inclusion is elementary"
+   only if the Lean proposition now really says that.
+8. If R1–R5 are complete and green, decide whether to attempt R6:
+   - if Mathlib already has suitable RCF theory/schema transfer APIs, implement
+     `elemSubstratum_isRealClosed`;
+   - otherwise write a blocker report in the PR body and leave the theorem for
+     a dedicated PR.
+9. If R6 is complete or explicitly deferred, decide whether to attempt R7 under
+   the same small-lemma standard.
+10. Run final verification:
+    - `make build`
+    - `make sorry-count`
+    - `make axiom-count`
+11. Commit on a focused branch and open a PR. The PR body must clearly separate:
+    - required statement-level fixes;
+    - optional mathematical strengthenings completed;
+    - optional strengthenings deferred with blockers;
+    - verification results.
+
+## Success Criteria
+
+Required:
+
+1. `RCFSubfieldRealElementary` is stated over bare `K : Subfield ℝ`.
+2. The proposition asserts elementarity of the inclusion/subtype map, not mere
+   existence of some elementary embedding.
+3. Existing `icahTheorem` assembly still compiles using the compatibility
+   hypothesis or its helper.
+4. The project still declares zero axioms.
+5. `make axiom-count` prints 0.
+6. `make sorry-count` prints 0.
+7. `make build` succeeds.
+8. README, upstreaming notes, and paper draft prose match the new Lean
+   statement exactly.
+9. The PR body documents whether `elemSubstratum_isRealClosed` and the
+   directed-union lemma were implemented or deferred.
+
+Optional success:
+
+10. `elemSubstratum_isRealClosed` is proved with no new axioms or sorries.
+11. A directed-union elementary-substructure lemma is proved or precisely
+    specified as a Mathlib-facing follow-up.
+12. The constant-chain M5 witness is documented as temporary, with a clear path
+    to a strictly increasing chain once inclusion elementarity and directed
+    union infrastructure are available.
+
+## Risks and Mitigations
+
+- **Risk:** Mathlib's elementary embedding API does not expose a convenient
+  canonical inclusion embedding for subfields.
+  **Mitigation:** Use an existential pair `(e, ∀ x, e x = (x : ℝ))` as the
+  proposition shape.
+
+- **Risk:** Deprecating `RCFModelComplete` causes warnings in files guarded by
+  exact `#guard_msgs`.
+  **Mitigation:** Do not add the deprecation attribute in this PR; use a
+  docstring-only compatibility note.
+
+- **Risk:** `elemSubstratum_isRealClosed` requires substantial RCF
+  axiomatization work.
+  **Mitigation:** Defer it with a blocker report rather than adding axioms or
+  large unverified schema code.
+
+- **Risk:** The local environment lacks Lean again.
+  **Mitigation:** Do not edit proofs blind. Install/expose the toolchain first
+  or leave the PR unmerged until CI is green.
+
+---
+
+# Historical Spec: ICAH Lean — Incremental Proof Formalization
 
 > **Status (June 2026): implemented and superseded — twice.**
 > All requirements R1–R10 below are complete, and the project has since gone

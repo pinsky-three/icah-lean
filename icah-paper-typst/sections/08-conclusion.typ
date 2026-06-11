@@ -23,7 +23,7 @@ The development is pinned and machine-checked:
   align: left,
   table.header([*Lean declaration*], [*Paper role*], [*Hypotheses*]),
   [`NotCH`], [the $not "CH"$ regime (Def., Section 5)], [—],
-  [`RCFSubfieldRealElementary` / `RCFModelComplete`], [$RR$-specialized RCF subfield elementarity (Gap, Section 5)], [—],
+  [`RCFSubfieldRealElementary` / `RCFModelComplete`], [$RR$-specialized RCF subfield-inclusion elementarity (Gap, Section 5)], [—],
   [`exists_intermediate_cardinal`], [intermediate cardinal witness], [`NotCH`],
   [`Stratum`, `SizeAwareField`], [core objects (Section 3)], [—],
   [`syntheticStratum`], [concrete $aleph_1$-stratum], [`NotCH`],
