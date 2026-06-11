@@ -25,13 +25,13 @@ This is not a Mathlib gap. It is the intended set-theoretic regime of the projec
 == The single remaining Mathlib gap
 
 #gap[
-  `ICAH.RCFModelComplete : Prop`: model completeness of the theory of real-closed fields (a consequence of Tarski--Seidenberg quantifier elimination). Concretely: the inclusion of a real-closed subfield of $RR$ into $RR$ is an elementary embedding in the ring language (in which the order of a real-closed field is definable via squares).
+  `ICAH.RCFSubfieldRealElementary : Prop` (compatibility spelling `ICAH.RCFModelComplete`): the inclusion of a real-closed subfield of $RR$ into $RR$ is an elementary embedding in the ring language (in which the order of a real-closed field is definable via squares). This is the $RR$-specialized consequence of model completeness of the theory of real-closed fields needed by Pillar B.
 ]
 
-This is a true classical theorem whose first-order formalization (quantifier elimination or model completeness for RCF inside Mathlib's `ModelTheory` framework) is absent from Mathlib. It is consumed only by Pillar B (`icahTheorem`); Pillar A (`icahElementary`) avoids it entirely via downward Löwenheim–Skolem.
+This is a true classical theorem whose first-order formalization follows from quantifier elimination or model completeness for RCF inside Mathlib's `ModelTheory` framework, neither of which is currently available in the needed form. It is consumed only by Pillar B (`icahTheorem`); Pillar A (`icahElementary`) avoids it entirely via downward Löwenheim–Skolem.
 
 #remark[
-  *Why this gap is harder than the ACF precedent.* Mathlib already contains the deep-embedded model theory of algebraically closed fields: the theory `ACF p` over the ring language, its completeness for $p$ prime or zero (`ACF_isComplete`), and the Lefschetz principle. That suggests a template — but completeness of ACF comes cheap via uncountable categoricity and the Łoś–Vaught test, a route that is *closed* for RCF: the theory of real-closed fields is unstable (it defines a linear order) and has the maximum number of models in every uncountable cardinality. Discharging `RCFModelComplete` therefore requires QE-grade work — e.g. Robinson's model-completeness test with sign-change/root-counting embedding arguments inside the deep embedding — substantially more than porting the ACF files.
+  *Why this gap is harder than the ACF precedent.* Mathlib already contains the deep-embedded model theory of algebraically closed fields: the theory `ACF p` over the ring language, its completeness for $p$ prime or zero (`ACF_isComplete`), and the Lefschetz principle. That suggests a template — but completeness of ACF comes cheap via uncountable categoricity and the Łoś–Vaught test, a route that is *closed* for RCF: the theory of real-closed fields is unstable (it defines a linear order) and has the maximum number of models in every uncountable cardinality. Discharging `RCFSubfieldRealElementary` therefore requires QE-grade work — e.g. Robinson's model-completeness test with sign-change/root-counting embedding arguments inside the deep embedding — substantially more than porting the ACF files.
 
   Prior art calibrates the effort: the `math-comp/real-closed` library in Coq/Rocq contains a certified quantifier-elimination procedure for RCF with the decision procedure `rcf_sat` and its correctness proof (Cohen–Mahboubi @cohen_mahboubi_lmcs), and HOL Light has McLaughlin–Harrison's proof-producing decision procedure for RCF @mclaughlin_harrison_cade. Neither transfers directly to Mathlib's `FirstOrder` framework, but Cohen–Mahboubi is the closest blueprint. (This also discharges the earlier draft's TODO asking for a situated estimate of the gap.)
 ]
@@ -42,7 +42,7 @@ Because the hypotheses are explicit, the audit can be given per theorem. The cla
 
 + *ZFC-pure* (kernel axioms only, no project hypotheses): `exists_elementary_substratum`, `exists_elementary_substratum_extending`, `elemSubstratumSubfield`, `exists_rc_subfield`, `relAlgebraic_isRealClosed`, `isRealClosed_of_forall_root`, `Real.isRealClosed`, `tarskiVaughtDirectLimit`, `ofLevelElem` (the ambient-free chain theorem), `directLimit_card_eq_iSup`, `directLimit_card_lt_continuum`, `directLimit_intermediate`, `cofinal_family_length_lower_bound`, `fieldOnStratum`, `fieldOnSubfieldStratum`, `algReal_card_le_aleph0`.
 + *Under `NotCH`*: `exists_intermediate_cardinal`, `syntheticStratum`, `subfieldStratumExists`, `intermediateRCSubfieldStratum`, `exists_cofinal_rc_family`, `exists_cofinal_rc_family_cof_length`, `cofinal_family_limit_size`, and the Pillar A main theorem `icahElementary`.
-+ *Under `NotCH` and `RCFModelComplete`*: the Pillar B main theorem `icahTheorem` (the model-completeness hypothesis enters only through the elementary-chain clause M5).
++ *Under `NotCH` and `RCFModelComplete`*: the Pillar B main theorem `icahTheorem` (the specialized real-closed-subfield elementarity hypothesis enters only through the elementary-chain clause M5).
 
 The ZFC-pure results need neither hypothesis — that property is precisely their upstream selling point.
 
@@ -66,10 +66,10 @@ The earlier inventory was discharged in two stages. First, five axioms became th
   `ICAH.ElemChain.losDirectLimit` --- *proved and renamed* (`tarskiVaughtDirectLimit`, `ICAH/ElementaryChain.lean`): the direct limit of an elementary chain compatibly embedded in $RR$ is elementarily equivalent to $RR$, via `Language.DirectLimit.lift` and the Tarski--Vaught test.
 ]
 
-Second, the two remaining axioms (`not_CH`, `rcfModelComplete`) were converted from axioms into the explicit hypotheses `NotCH` and `RCFModelComplete`, emptying the axiom inventory entirely.
+Second, the two remaining axioms (`not_CH`, `rcfModelComplete`) were converted from axioms into the explicit hypotheses `NotCH` and `RCFSubfieldRealElementary` (with compatibility spelling `RCFModelComplete`), emptying the axiom inventory entirely.
 
 #remark[
-  Two further axioms of the earlier draft, `subfieldIsRealClosed` and `subfieldStratumElemEmb`, were *deleted as false in the stated generality*: $QQ$ is a subfield of $RR$ that is neither real closed nor elementarily embedded (the sentence $exists x, x^2 = 2$ distinguishes $QQ$ from $RR$). They are replaced by the sound refinement `RCSubfieldStratum` (a stratum whose carrier is a real-closed subfield), for which elementarity follows from `RCFModelComplete`. This self-correction record — two former assumptions identified as false, with counterexample, and repaired by an honest weakening — is, we believe, the most scientifically credible feature of the methodology, and the reason the audit infrastructure exists.
+  Two further axioms of the earlier draft, `subfieldIsRealClosed` and `subfieldStratumElemEmb`, were *deleted as false in the stated generality*: $QQ$ is a subfield of $RR$ that is neither real closed nor elementarily embedded (the sentence $exists x, x^2 = 2$ distinguishes $QQ$ from $RR$). They are replaced by the sound refinement `RCSubfieldStratum` (a stratum whose carrier is a real-closed subfield), for which inclusion elementarity follows from `RCFModelComplete`. This self-correction record — two former assumptions identified as false, with counterexample, and repaired by an honest weakening — is, we believe, the most scientifically credible feature of the methodology, and the reason the audit infrastructure exists.
 ]
 
 == The honest limit construction
@@ -82,8 +82,8 @@ The original $NN$-indexed chain formulation of the limit-size milestone is vacuo
 
 == Recommended order of attack
 
-+ Post the minimized in-framework statement of `RCFModelComplete` on the Lean Zulip model-theory stream (resolving possible overlap with in-progress ordered-field/real-closure work) before any PR.
++ Post the minimized in-framework statement of `RCFSubfieldRealElementary` on the Lean Zulip model-theory stream (resolving possible overlap with in-progress ordered-field/real-closure work) before any PR.
 + PR 1 (small, ZFC-pure, attractive): the DLS-based elementary-substrata existence for $RR$ plus the direct-limit cardinality identity `directLimit_card_eq_iSup`.
 + PR 2: the ambient-free Tarski–Vaught chain theorem for `Language.DirectLimit` (proved here as `ofLevelElem` / `realize_ofLevel_iff` for ℕ-indexed chains in the ring language; the upstream version should generalize the index order and language — the formula induction carries over verbatim, with the relation case no longer vacuous).
 + PR 3 (after dedup check): `Real.isRealClosed`, the root-closure criterion `isRealClosed_of_forall_root`, and `relAlgebraic_isRealClosed`.
-+ Long-term: formalize quantifier elimination / model completeness for RCF in Mathlib's `ModelTheory` framework, modeled on the ACF files but via Robinson's test, discharging `RCFModelComplete` --- the final gap.
++ Long-term: formalize quantifier elimination / model completeness for RCF in Mathlib's `ModelTheory` framework, modeled on the ACF files but via Robinson's test, discharging `RCFSubfieldRealElementary` --- the final gap.

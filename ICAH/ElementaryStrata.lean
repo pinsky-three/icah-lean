@@ -18,13 +18,17 @@ Skolem functions).
 
 * **Pillar A (this file)**: elementarity is *free* — an elementary
   substructure is elementarily equivalent to ℝ by definition.  The cost is
-  concreteness: the strata are Skolem hulls with no algebraic description.
-  The bridge lemma `elemSubstratumSubfield` recovers some structure: every
-  elementary substratum is (the carrier of) a subfield of ℝ.
+  concreteness: the strata are Skolem hulls rather than explicitly generated
+  algebraic closures.  The bridge lemma `elemSubstratumSubfield` recovers
+  basic algebraic structure: every elementary substratum is (the carrier of) a
+  subfield of ℝ.  Proving that these substrata are real closed is the next
+  natural strengthening: it should follow by transferring a ring-language
+  axiomatization of real-closed fields.
 * **Pillar B**: strata are concrete — relative algebraic closures of
   generated subfields, with native `IsRealClosed` instances.  The cost is
-  elementarity, which requires the model completeness of RCF
-  (`RCFModelComplete`, the single remaining Mathlib gap).
+  elementarity, which requires the ℝ-specialized real-closed-subfield
+  elementarity consequence of RCF model completeness (`RCFModelComplete`, the
+  single remaining Mathlib gap).
 
 ### Key results
 

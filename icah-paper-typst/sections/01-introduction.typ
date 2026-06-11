@@ -29,15 +29,15 @@ The development is organized as two pillars that realize the same informal pictu
 
 #theorem[
   *(Theorem 2 — Pillar B, algebraic realization; Lean: `icahTheorem`.)*
-  Assume $not "CH"$ and additionally `RCFModelComplete` (every real-closed subfield of $RR$ is an elementary substructure in the ring language — model completeness of RCF, the single remaining Mathlib gap). Then the four clauses of `ICAHStatement` hold:
+  Assume $not "CH"$ and additionally `RCFModelComplete` (compatibility name for the $RR$-specialized consequence that the inclusion of every real-closed subfield of $RR$ into $RR$ is elementary in the ring language; it follows from model completeness of RCF, the single remaining Mathlib gap). Then the four clauses of `ICAHStatement` hold:
 
   + *(M1)* for every ordinal $n$ there is a stratum $R$ with index $n$ and $aleph_0 < \#R < 2^(aleph_0)$;
   + *(M3)* every stratum carries a size-aware ordered-field structure with matching carrier and cardinal;
   + *(M5)* there is a chain of strata — concretely, real-closed subfields of $RR$ given as relative algebraic closures — whose direct limit is elementarily equivalent to $RR$;
-  + *(M6)* there is a `𝔠.ord`-indexed monotone family of intermediate-size subfields of $RR$ whose union has cardinality $2^(aleph_0)$.
+  + *(M6)* there is a `𝔠.ord`-indexed monotone family of intermediate-size subfields of $RR$ whose union is all of $RR$ and hence has cardinality $2^(aleph_0)$.
 ]
 
-The duality between the pillars is a genuine trade-off, made explicit throughout the paper: Pillar A gets elementarity for free (the strata are Skolem hulls, with no concrete algebraic description beyond being subfields), while Pillar B has concrete, named strata (relative algebraic closures, with native `IsRealClosed` instances) but must purchase elementarity through Tarski–Seidenberg.
+The duality between the pillars is a genuine trade-off, made explicit throughout the paper: Pillar A gets elementarity for free (the strata are Skolem hulls, already known in Lean to be subfields and expected to be real closed after an RCF-axiomatization transfer), while Pillar B has concrete, named strata (relative algebraic closures, with native `IsRealClosed` instances) but must purchase elementarity through Tarski–Seidenberg.
 
 #contribution[
   The main contribution is not new mathematics — to a model theorist, the existence of real-closed subfields of every intermediate cardinality is a corollary of downward Löwenheim–Skolem plus Tarski, and the chain results are textbook Tarski–Vaught. The contribution is the formalization architecture and the assumption cartography: a Lean-readable decomposition of a continuum-stratification statement into proved lemmas, explicitly threaded hypotheses, and Mathlib-facing gaps, with the dependency set of every flagship theorem machine-audited in the build. The development declares *zero* axioms; the main theorem (Pillar A) holds under $not "CH"$ alone.

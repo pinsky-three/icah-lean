@@ -21,26 +21,26 @@ This repository provides the **formal scaffolding**: cardinal bookkeeping, first
 
 ## 0.5) Current status (June 2026)
 
-The main assembly theorem `ICAH.icahTheorem` **compiles with zero sorries** and depends on exactly **two project axioms**, locked into the build via `#guard_msgs`:
+The main assembly theorem `ICAH.icahTheorem` **compiles with zero sorries** and the project declares **zero axioms**. The two mathematical assumptions are explicit `Prop` hypotheses in theorem signatures, and the build locks the kernel axiom audit with `#guard_msgs`:
 
 ```
-'ICAH.icahTheorem' depends on axioms: [propext, Classical.choice, not_CH, rcfModelComplete, Quot.sound]
+'ICAH.icahTheorem' depends on axioms: [propext, Classical.choice, Quot.sound]
 ```
 
-| Axiom | Role |
+| Hypothesis | Role |
 |---|---|
-| `ICAH.not_CH` | The ¬CH assumption — definitional for ICAH, not a gap |
-| `ICAH.rcfModelComplete` | Model completeness of RCF (Tarski–Seidenberg): a *real‑closed* subfield of ℝ is an elementary substructure. The single remaining Mathlib gap |
+| `ICAH.NotCH` | The ¬CH assumption — definitional for ICAH, not a Mathlib gap |
+| `ICAH.RCFSubfieldRealElementary` / `ICAH.RCFModelComplete` | The ℝ-specialized consequence that the inclusion of any *real‑closed* subfield of ℝ into ℝ is elementary. This follows from model completeness of RCF (Tarski–Seidenberg) and is the single remaining Mathlib gap |
 
 Highlights of what is **proved** (no axioms beyond the above):
 
 - `Real.isRealClosed` — ℝ is real closed (`Real.sqrt` + IVT), `ICAH/RealClosed.lean`.
 - `exists_rc_subfield` — for every `ℵ₀ ≤ κ ≤ 𝔠` there is a **real‑closed** subfield of ℝ of cardinality exactly `κ` (relative algebraic closure of a generated subfield), `ICAH/FieldOnStratum.lean`.
 - `fieldOnStratum` — every stratum carries a `SizeAwareField` (Equiv‑transport from such a subfield); formerly an axiom.
-- `ElemChain.losDirectLimit` — Łoś/Tarski–Vaught for `Language.DirectLimit`: the direct limit of an elementary chain compatibly embedded in ℝ is elementarily equivalent to ℝ; formerly an axiom.
+- `ElemChain.tarskiVaughtDirectLimit` — Tarski–Vaught for `Language.DirectLimit`: the direct limit of an elementary chain compatibly embedded in ℝ is elementarily equivalent to ℝ; formerly an axiom and formerly misnamed as a Łoś-style result.
 - `exists_cofinal_rc_family` — the **honest M6**: a `𝔠.ord`‑indexed monotone family of intermediate‑size real‑closed subfields whose union is all of ℝ (`ICAH/CofinalFamily.lean`). The earlier ℕ‑indexed formulation was vacuous by König's theorem (`cof 𝔠 > ℵ₀`).
 
-Two former axioms were **deleted as mathematically false** and replaced by sound refinements: `subfieldIsRealClosed` (ℚ is a counterexample) and `subfieldStratumElemEmb` (elementarity requires real‑closedness; see `RCSubfieldStratum` + `rcfModelComplete`).
+Two former axioms were **deleted as mathematically false** and replaced by sound refinements: `subfieldIsRealClosed` (ℚ is a counterexample) and `subfieldStratumElemEmb` (elementarity requires real‑closedness; see `RCSubfieldStratum` + `RCFSubfieldRealElementary`).
 
 See `AGENTS.md` for the full per‑file status and the contributor workflow.
 
@@ -111,7 +111,7 @@ Add a module (to be created by you) `ICAH/Definability.lean`:
 - Define:
   ```lean
   namespace ICAH
-  def LOR := FirstOrder.Language.ordRing
+  abbrev LOR := FirstOrder.Language.ring
   -- A predicate: a relation/function on a subtype `S` is definable with parameters in `S`.
   structure DefinableOn (S : Set ℝ) (n : ℕ) (k : ℕ) : Prop := ...
   ```
@@ -132,12 +132,12 @@ is now a **theorem** in `ICAH/FieldOnStratum.lean`. The construction follows pat
 2. **Transport:** the field structure is carried from `K` to the stratum's carrier along a cardinality `Equiv` (`Equiv.field`, `LinearOrder.lift'`).
 3. **Real‑closedness of ℝ itself:** `Real.isRealClosed` is proved from `IsRealClosed.of_linearOrderedField` using `Real.sqrt` and the intermediate value theorem for odd‑degree polynomials.
 
-### 2.4 Elementary chain and limit — ✅ done (modulo `rcfModelComplete`)
+### 2.4 Elementary chain and limit — ✅ done (modulo `RCFSubfieldRealElementary`)
 
 - `ElemChain` packages a directed system of elementary embeddings `F_m ↪ₑ F_n`; `DirectLim` is its `Language.DirectLimit`.
-- `ElemChain.losDirectLimit` (**proved**, formerly an axiom): if every level embeds elementarily and compatibly into ℝ, the direct limit is elementarily equivalent to ℝ. Proof: `Language.DirectLimit.lift` + Tarski–Vaught test.
-- `directLimit_card` (**proved**): cardinal accounting giving `#⟪F_ω⟫ = 𝔠` from level bounds.
-- `RCSubfieldStratum` bundles a stratum whose carrier is a **real‑closed** subfield; the axiom `rcfModelComplete` (model completeness of RCF) supplies the elementary embedding into ℝ. This is the only remaining gap.
+- `ElemChain.tarskiVaughtDirectLimit` (**proved**, formerly an axiom): if every level embeds elementarily and compatibly into ℝ, the direct limit is elementarily equivalent to ℝ. Proof: `Language.DirectLimit.lift` + Tarski–Vaught test.
+- `directLimit_card_eq_iSup` and `directLimit_card_lt_continuum` (**proved**): cardinal accounting for countable direct limits, including the closure theorem that countable chains of intermediate strata stay below `𝔠`.
+- `RCSubfieldStratum` bundles a stratum whose carrier is a **real‑closed** subfield; the hypothesis `RCFSubfieldRealElementary` / `RCFModelComplete` supplies the inclusion-form elementary embedding into ℝ. This is the only remaining gap.
 - **Honest M6** (`ICAH/CofinalFamily.lean`): since `cof 𝔠 > ℵ₀` (König), no ℕ‑indexed chain of intermediate‑size strata can union to ℝ. Instead, `exists_cofinal_rc_family` builds a `𝔠.ord`‑indexed monotone family of intermediate‑size real‑closed subfields with union ℝ, and `cofinal_family_limit_size` shows the union has cardinality `𝔠`.
 
 ### 2.5 Optional physics interface (non‑blocking)
@@ -159,13 +159,13 @@ icah-lean/
 ├─ .github/workflows/ci.yml     -- CI: build + axiom audit (#guard_msgs) + sorry count
 ├─ ICAH.lean                    -- umbrella import
 ├─ ICAH/Prelude.lean            -- smoke tests
-├─ ICAH/Axioms.lean             -- not_CH + exists_intermediate_cardinal
+├─ ICAH/Axioms.lean             -- NotCH + exists_intermediate_cardinal
 ├─ ICAH/SizeAwareField.lean     -- size-aware ordered fields
 ├─ ICAH/Strata.lean             -- strata + M1 cardinal lemmas
 ├─ ICAH/Definability.lean       -- LOR definability kernel (M2)
 ├─ ICAH/RealClosed.lean         -- IsRealClosed ℝ + root-closure criterion (M4)
-├─ ICAH/FieldOnStratum.lean     -- exists_rc_subfield, fieldOnStratum thm, rcfModelComplete axiom (M3+M4)
-├─ ICAH/ElementaryChain.lean    -- ElemChain, losDirectLimit thm, directLimit_card (M5)
+├─ ICAH/FieldOnStratum.lean     -- exists_rc_subfield, fieldOnStratum thm, RCFSubfieldRealElementary (M3+M4)
+├─ ICAH/ElementaryChain.lean    -- ElemChain, Tarski-Vaught direct limit, cardinal closure (M5)
 ├─ ICAH/CofinalFamily.lean      -- 𝔠.ord-indexed cofinal RC family (honest M6)
 └─ ICAH/Main.lean               -- ICAHStatement + icahTheorem + axiom audit
 ```
@@ -185,7 +185,7 @@ icah-lean/
 make cache         # lake exe cache get — fetch Mathlib precompiled cache (~8 GB)
 make build         # lake build (also enforces the axiom audit via #guard_msgs)
 make sorry-count   # should print 0
-make axiom-count   # should list exactly: not_CH, rcfModelComplete
+make axiom-count   # should print 0
 make clean
 ```
 
@@ -207,15 +207,15 @@ Open `ICAH/Prelude.lean` to confirm the environment is healthy. CI (`.github/wor
 4. **M4 – Real‑closedness** — ✅ **done.**  
    `Real.isRealClosed`, `isRealClosed_of_forall_root`, `relAlgebraic_isRealClosed` (`ICAH/RealClosed.lean`, `ICAH/FieldOnStratum.lean`).
 
-5. **M5 – Elementary chain** — ✅ **done modulo `rcfModelComplete`.**  
-   `losDirectLimit` proved (DirectLimit.lift + Tarski–Vaught); the embedding of an `RCSubfieldStratum` into ℝ is elementary by the `rcfModelComplete` axiom (Tarski–Seidenberg, the one Mathlib gap).
+5. **M5 – Elementary chain** — ✅ **done modulo `RCFSubfieldRealElementary`.**  
+   `tarskiVaughtDirectLimit` proved (DirectLimit.lift + Tarski–Vaught); the inclusion of the real-closed subfield underlying an `RCSubfieldStratum` into ℝ is elementary by the `RCFSubfieldRealElementary` / `RCFModelComplete` hypothesis (Tarski–Seidenberg consequence, the one Mathlib gap).
 
 6. **M6 – Size of the limit** — ✅ **done (reformulated).**  
-   `directLimit_card` proved for ℕ‑chains; the cofinal statement is the `𝔠.ord`‑indexed `exists_cofinal_rc_family` + `cofinal_family_limit_size`, avoiding the König obstruction.
+   `directLimit_card_eq_iSup` and `directLimit_card_lt_continuum` proved for ℕ‑chains; the cofinal statement is the `𝔠.ord`‑indexed `exists_cofinal_rc_family` + `cofinal_family_limit_size`, avoiding the König obstruction.
 
 7. **M7 – Optional physics stub** — not started; compartmentalised, non‑blocking.
 
-**Next milestone: M8 — prove `rcfModelComplete`** (quantifier elimination / model completeness of RCF in Mathlib's `ModelTheory` framework), reducing the project to the single definitional axiom `not_CH`. See `AGENTS.md` § "Closing the remaining axiom gap".
+**Next milestone: M8 — prove `RCFSubfieldRealElementary`** (from quantifier elimination / model completeness of RCF in Mathlib's `ModelTheory` framework), reducing the project to the single explicit hypothesis `NotCH`. See `AGENTS.md` § "Closing the remaining hypothesis gap".
 
 ---
 
@@ -271,7 +271,7 @@ MIT for code; text in this README under CC‑BY 4.0.
 
 ```lean
 /-- Language of ordered rings. -/
-abbrev LOR := FirstOrder.Language.ordRing
+abbrev LOR := FirstOrder.Language.ring
 
 /-- A relation/function on a subtype of ℝ is definable with parameters
     from that subtype. Flesh out with a proper FOL definition. -/
@@ -283,6 +283,6 @@ structure ElemEmb (A B : Type _) [LOR.Structure A] [LOR.Structure B] :=
 (isElementary : FirstOrder.ElementaryEmbedding LOR A B toFun)
 ```
 
-This sketch predates the implementation. The real API now lives in `ICAH/Definability.lean` (`LOR`, `DefinableOn`) and `ICAH/ElementaryChain.lean` (`ElemChain`, `↪ₑ[LOR]`). Both paths were ultimately used: direct real‑closedness for construction (M4), elementary substructure via `rcfModelComplete` for the chain (M5).
+This sketch predates the implementation. The real API now lives in `ICAH/Definability.lean` (`LOR`, `DefinableOn`) and `ICAH/ElementaryChain.lean` (`ElemChain`, `↪ₑ[LOR]`). Both paths were ultimately used: direct real‑closedness for construction (M4), elementary substructure via `RCFSubfieldRealElementary` for the chain (M5).
 
 Happy proving!
