@@ -1,6 +1,5 @@
 #import "../src/macros.typ": *
 
-#pagebreak(weak: true)
 = Hypothesis inventory, per-theorem audit, and Mathlib roadmap
 
 A central strength of the Lean development is that it does not hide its assumptions. After the June 2026 refactor, the project declares *zero* axioms: the two named assumptions are ordinary `Prop`s threaded through the development as explicit hypotheses, so the assumption set of every theorem is visible in its type signature. The kernel-level audit is enforced in-source by `#guard_msgs in #print axioms` blocks and checked in CI:

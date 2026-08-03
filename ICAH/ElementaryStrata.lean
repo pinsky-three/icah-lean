@@ -191,7 +191,9 @@ structure ICAHElementary : Prop where
   strata_exist : ∀ κ : Cardinal.{0}, aleph0 < κ → κ < continuum →
     ∃ S : LOR.ElementarySubstructure ℝ, #S = κ
   /-- There is an elementary chain of intermediate-size strata whose direct
-      limit is elementarily equivalent to ℝ. -/
+      limit is elementarily equivalent to ℝ.  The assembly theorem below
+      witnesses this field with a constant chain; it does not assert a
+      strictly increasing hierarchy. -/
   elementary_chain : ∃ C : ElemChain.{0},
     (∀ n, aleph0 < #(C.obj n) ∧ #(C.obj n) < continuum) ∧
     (C.DirectLim ≅[LOR] ℝ)

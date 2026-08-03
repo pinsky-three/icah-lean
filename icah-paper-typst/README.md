@@ -1,6 +1,6 @@
 # ICAH Typst Paper Project
 
-Starter paper project for the Lean formalization of the Intermediate-Cardinality Arithmetic Hypothesis (ICAH): stratified continuum, subfield strata, size-aware fields, elementary chains, and direct-limit cardinality.
+Publication source for the Lean formalization of the Intermediate-Cardinality Arithmetic Hypothesis (ICAH): elementary substrata, real-closed subfields, elementary-chain direct limits, and cofinality at the continuum.
 
 ## Template choice
 
@@ -15,9 +15,11 @@ Alternative templates to consider later:
 ## Build
 
 ```bash
-brew install typst
+brew install typst # must provide Typst 0.14.2
 make build
 ```
+
+The Makefile pins and verifies Typst `0.14.2`, matching CI and release `v1.0.0`.
 
 Output:
 
@@ -54,16 +56,15 @@ Lead with the proved Lean content, not with the philosophical ambition.
 
 Recommended headline result:
 
-> `directLimit_card`: a complete cardinal-arithmetic proof that a countable direct limit has cardinality continuum when the level cardinalities are below continuum and their supremum is continuum.
+> `directLimit_card_eq_iSup`: the cardinality of a countable direct limit equals the supremum of its level cardinalities when that supremum is infinite, together with `directLimit_card_lt_continuum`, the König-based closure theorem below the continuum.
 
 Recommended framing:
 
-> A formalization study that decomposes an intermediate-cardinality continuum hypothesis into proved Lean results, named axioms, and Mathlib contribution targets.
+> A formalization study that separates general elementary-chain theorems, constant-chain witnesses in the top-level assembly results, a nonconstant cofinal family of real-closed subfields not yet proved elementary, explicit hypotheses, and Mathlib contribution targets.
 
-## Before public release
+## Release checks
 
-1. Re-run `lake build` in the Lean repo.
-2. Paste the exact `#print axioms icahTheorem` output into an appendix.
-3. Verify whether the current `README.md` and code comments still describe `directLimit_card` as a stub; update stale comments if the theorem is now fully proved.
-4. Minimize every named Mathlib gap into a small standalone Lean example.
-5. Decide whether the initial venue is a formalization venue, Lean/mathlib note, or arXiv preprint in logic/formalized mathematics.
+1. Run `make build`, `make sorry-count`, and `make axiom-count` in the Lean repository.
+2. Run `make build` here with Typst 0.14.2.
+3. Confirm that the manuscript cites release tag `v1.0.0`.
+4. Confirm that the top-level constant chains are never conflated with the nonconstant cofinal real-closed family.

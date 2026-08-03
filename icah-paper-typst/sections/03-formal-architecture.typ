@@ -64,6 +64,10 @@ From these successor maps, the project defines two related systems:
 
 The lemma `embLE_eq_sysEmb` proves that these two constructions agree as functions. This is a small but important bridge: the proof-relevant elementary embedding API and the directed-colimit API are not automatically the same object.
 
+#remark[
+  The chain API and its theorems are general, but the top-level existential witnesses are not increasing: `icahElementary` uses `constElemChain S`, and `icahTheorem` uses `mkConstantSC R`. Thus the assembly theorems establish the literal existence clauses in their structures without constructing a hierarchy of distinct levels.
+]
+
 == Direct limit
 
 #definition[
@@ -76,4 +80,4 @@ The direct limit is the formal version of the intended limit field $F_omega$. Th
 
 The $NN$-indexed chain cannot, by itself, exhaust $RR$: König's theorem gives $"cof"(c) > aleph_0$, so a countable increasing union of sets of size $< c$ has size $< c$. The module `ICAH/CofinalFamily.lean` therefore introduces a `𝔠.ord`-indexed monotone family of intermediate-size real-closed subfields whose union is all of $RR$ (`exists_cofinal_rc_family`). The top-level statement `ICAHStatement` uses this family for its limit-size clause, which keeps the formalized claim non-vacuous.
 
-The module also proves that $"cof"(c)$ is the *exact* threshold: any family of subsets of $RR$ of size $< c$ covering $RR$ has at least $"cof"(c)$ members (`cofinal_family_length_lower_bound`), and a monotone real-closed covering family of length exactly $"cof"(c)$ exists (`exists_cofinal_rc_family_cof_length`, by composing the `𝔠.ord`-indexed family with a fundamental sequence). See Section 4.
+The module also proves a qualified exact threshold: any family of subsets of $RR$, each of size $< c$, covering $RR$ has at least $"cof"(c)$ members (`cofinal_family_length_lower_bound`), and a monotone covering family of intermediate-size real-closed subfields of length exactly $"cof"(c)$ exists (`exists_cofinal_rc_family_cof_length`, by composing the `𝔠.ord`-indexed family with a fundamental sequence). These subfields are real closed, but their inclusions are not proved elementary. See Section 4.

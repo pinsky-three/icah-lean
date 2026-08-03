@@ -66,11 +66,13 @@ structure ICAHStatement : Prop where
   strata_exist : ∀ (n : Ordinal), ∃ R : Stratum, R.n = n
   /-- M3: Every stratum admits a size-aware field structure. -/
   field_on_stratum : ∀ (R : Stratum), ∃ F : SizeAwareField, F.carrier = R.carrier ∧ F.κ = R.κ
-  /-- M5: There exists a StratumChain whose direct limit is elementarily equivalent to ℝ. -/
+  /-- M5: There exists a StratumChain whose direct limit is elementarily
+      equivalent to ℝ.  `icahTheorem` witnesses this with a constant chain. -/
   elementary_chain : ∃ (SC : StratumChain), SC.toElemChain.DirectLim ≅[LOR] ℝ
   /-- M6 (honest form): a `𝔠.ord`-indexed monotone family of subfields of ℝ,
       each of intermediate size, whose union is all of ℝ and hence has
-      cardinality `𝔠`. -/
+      cardinality `𝔠`.  This family is separate from M5 and is not asserted
+      here to have elementary inclusions. -/
   limit_size : ∃ K : ContinuumIdx → Subfield ℝ,
     Monotone K ∧
     (∀ i, aleph0 < #(K i) ∧ #(K i) < continuum) ∧

@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this formalization, please cite the paper and software release below."
+title: "icah-lean: Lean formalization of intermediate-cardinality strata and direct limits"
+type: software
+authors:
+  - family-names: Malpartida
+    given-names: Bregy
+version: 1.0.0
+date-released: 2026-08-03
+repository-code: "https://github.com/pinsky-three/icah-lean"
+url: "https://github.com/pinsky-three/icah-lean/tree/v1.0.0"
+license: MIT
+keywords:
+  - Lean
+  - Mathlib
+  - model theory
+  - real closed fields
+  - continuum hypothesis
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Malpartida
+      given-names: Bregy
+  title: "Intermediate-Cardinality Strata and Direct Limits in Lean: A Formalization Study around the Continuum"
+  year: 2026
+  url: "https://github.com/pinsky-three/icah-lean/tree/v1.0.0"

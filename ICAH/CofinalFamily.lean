@@ -38,8 +38,9 @@ The `𝔠.ord` index length above is not optimal.  The sharp statement is:
   `(cf 𝔠).ord`, obtained by composing the `𝔠.ord`-indexed family with a
   fundamental sequence (`Ordinal.exists_isFundamentalSeq`).
 
-Together: the least length of an exhausting family of intermediate strata is
-exactly `cf(𝔠)`.
+Together: the least index cardinal of a covering family of subsets of ℝ,
+each of size `< 𝔠`, is exactly `cf(𝔠)`, and the upper bound can be attained
+by real-closed subfields.  No elementarity assertion is made for this family.
 -/
 
 /-- The index type for the cofinal family: the order type of the ordinal `𝔠.ord`
@@ -157,8 +158,10 @@ lemma mk_cofContinuumIdx : #CofContinuumIdx = continuum.ord.cof :=
     `Iio (cf 𝔠).ord → Iio 𝔠.ord`).
 
     Together with `cofinal_family_length_lower_bound`, this shows the least
-    length of an exhausting family of intermediate strata is exactly
-    `cf(𝔠)`. -/
+    index cardinal of a covering family of subsets of ℝ of size `< 𝔠` is
+    exactly `cf(𝔠)`, with the upper bound attained by intermediate-size
+    real-closed subfields.  It does not show that their inclusions are
+    elementary. -/
 theorem exists_cofinal_rc_family_cof_length (h : NotCH) :
     ∃ K : CofContinuumIdx → Subfield ℝ,
       Monotone K ∧

@@ -8,7 +8,7 @@ The Lean development studied here chooses the first route. It introduces a named
 
 == What "ICAH" denotes
 
-The name requires precision. Despite the word "Hypothesis", ICAH is *not* an axiom candidate in the sense of Martin's Axiom or PFA: it is not a new assumption whose consistency strength is at issue. ICAH denotes a *theorem schema under $not "CH"$* — a conjunction of structural claims about intermediate-cardinality strata of $RR$, each provable (in ZFC, formalized in Lean/Mathlib) once $not "CH"$ is granted. The formal content is the pair of Lean propositions `ICAHElementary` and `ICAHStatement` displayed below, together with their proofs.
+The name requires precision. Despite the word "Hypothesis", ICAH is *not* an axiom candidate in the sense of Martin's Axiom or PFA. The formal content is a pair of Lean propositions. `ICAHElementary` is proved from $not "CH"$ alone. `ICAHStatement`, the more concrete algebraic packaging, is proved from $not "CH"$ together with the explicit real-closed-subfield elementarity hypothesis described in Section 5.
 
 == Main theorem
 
@@ -20,7 +20,7 @@ The development is organized as two pillars that realize the same informal pictu
 
   + *(band)* there exists a cardinal $kappa$ with $aleph_0 < kappa < 2^(aleph_0)$;
   + *(strata at every level)* for every cardinal $kappa$ with $aleph_0 < kappa < 2^(aleph_0)$ there is an elementary substructure $S prec RR$ with $\#S = kappa$ (this clause is ZFC-pure: downward Löwenheim–Skolem);
-  + *(chains)* there is an $NN$-indexed elementary chain of intermediate-size strata whose direct limit is elementarily equivalent to $RR$;
+  + *(chains)* there is an $NN$-indexed elementary chain of intermediate-size strata whose direct limit is elementarily equivalent to $RR$; the witness used in the assembly theorem is the constant chain at one elementary substratum;
   + *(closure; ZFC-pure)* for every $NN$-indexed elementary chain whose levels have size $< 2^(aleph_0)$, the direct limit has size $< 2^(aleph_0)$ — countable chains never escape the hierarchy;
   + *(cofinality)* every real number lies in some intermediate-size elementary substructure of $RR$.
 
@@ -33,11 +33,15 @@ The development is organized as two pillars that realize the same informal pictu
 
   + *(M1)* for every ordinal $n$ there is a stratum $R$ with index $n$ and $aleph_0 < \#R < 2^(aleph_0)$;
   + *(M3)* every stratum carries a size-aware ordered-field structure with matching carrier and cardinal;
-  + *(M5)* there is a chain of strata — concretely, real-closed subfields of $RR$ given as relative algebraic closures — whose direct limit is elementarily equivalent to $RR$;
-  + *(M6)* there is a `𝔠.ord`-indexed monotone family of intermediate-size subfields of $RR$ whose union is all of $RR$ and hence has cardinality $2^(aleph_0)$.
+  + *(M5)* there is a chain of strata whose direct limit is elementarily equivalent to $RR$; the witness used here is the constant chain at one intermediate-size real-closed subfield, with its inclusion made elementary by the additional hypothesis;
+  + *(M6)* separately, there is a nonconstant `𝔠.ord`-indexed monotone family of intermediate-size real-closed subfields of $RR$ whose union is all of $RR$ and hence has cardinality $2^(aleph_0)$. No elementarity claim is proved for the inclusions in this cofinal family.
 ]
 
 The duality between the pillars is a genuine trade-off, made explicit throughout the paper: Pillar A gets elementarity for free (the strata are Skolem hulls, already known in Lean to be subfields and expected to be real closed after an RCF-axiomatization transfer), while Pillar B has concrete, named strata (relative algebraic closures, with native `IsRealClosed` instances) but must purchase elementarity through Tarski–Seidenberg.
+
+#remark[
+  Three constructions must not be conflated. First, `tarskiVaughtDirectLimit` and `ofLevelElem` are general theorems about arbitrary $NN$-indexed elementary chains. Second, the existential chain clauses of `icahElementary` and `icahTheorem` are discharged by *constant* chains, so those assembly theorems do not produce a strictly increasing elementary hierarchy. Third, `exists_cofinal_rc_family` produces a genuinely nonconstant monotone covering family of real-closed subfields, but the development does not prove that its transition inclusions are elementary. Establishing an elementary cofinal family is future work.
+]
 
 #contribution[
   The main contribution is not new mathematics — to a model theorist, the existence of real-closed subfields of every intermediate cardinality is a corollary of downward Löwenheim–Skolem plus Tarski, and the chain results are textbook Tarski–Vaught. The contribution is the formalization architecture and the assumption cartography: a Lean-readable decomposition of a continuum-stratification statement into proved lemmas, explicitly threaded hypotheses, and Mathlib-facing gaps, with the dependency set of every flagship theorem machine-audited in the build. The development declares *zero* axioms; the main theorem (Pillar A) holds under $not "CH"$ alone.
@@ -46,10 +50,10 @@ The duality between the pillars is a genuine trade-off, made explicit throughout
 The project should be positioned for a mathematical audience as a formalization paper with three layers:
 
 + a set-theoretic layer, where the hypothesis $not "CH"$ produces intermediate cardinal witnesses;
-+ a model-theoretic/algebraic layer, where elementary substrata of every intermediate cardinality are produced by downward Löwenheim–Skolem (Pillar A), and real-closed subfields of every infinite cardinality up to the continuum are constructed and assembled into elementary chains (Pillar B);
++ a model-theoretic/algebraic layer, where elementary substrata of every intermediate cardinality are produced by downward Löwenheim–Skolem (Pillar A), general elementary-chain theorems are proved, and real-closed subfields of every infinite cardinality up to the continuum are constructed (Pillar B);
 + a proof-engineering layer, where the one remaining Mathlib dependency is exposed as a named hypothesis, machine-audited in the build, and can be attacked as an independent Mathlib contribution.
 
-The present paper draft is organized as follows. Section 2 recalls the mathematical background. Section 3 describes the Lean architecture. Section 4 isolates the results that are already proved. Section 5 gives the hypothesis inventory, the per-theorem audit, and the Mathlib roadmap. Section 6 discusses related work, including the formalizations of the independence of CH and the certified quantifier-elimination procedures for real-closed fields in other proof assistants. Section 7 briefly notes analogues in valued and p-adic field theory. Section 8 concludes with reproducibility data and an engagement plan.
+The paper is organized as follows. Section 2 recalls the mathematical background. Section 3 describes the Lean architecture. Section 4 isolates the results that are already proved. Section 5 gives the hypothesis inventory, the per-theorem audit, and the Mathlib roadmap. Section 6 discusses related work, including the formalizations of the independence of CH and the certified quantifier-elimination procedures for real-closed fields in other proof assistants. Section 7 briefly notes analogues in valued and p-adic field theory. Section 8 concludes with reproducibility data and an engagement plan.
 
 == Guiding problem
 
@@ -66,7 +70,7 @@ The present paper draft is organized as follows. Section 2 recalls the mathemati
 The central formal question is:
 
 #statement("Question", [
-  Can one build, under explicit assumptions, a hierarchy of intermediate-size strata whose carriers support enough algebra and model theory to form elementary chains, and how long must a family of such strata be to exhaust $RR$?
+  Which components of an intermediate-cardinality stratification can be formalized under explicit assumptions, what general elementary-chain theorems are available, and how long must a family of intermediate-size subsets or real-closed subfields be to exhaust $RR$?
 ])
 
-The current Lean code answers this question completely. Semantically (Pillar A), every clause is proved under $not "CH"$ alone. Algebraically (Pillar B), every clause is proved once the model completeness of real-closed fields is granted. And the exhaustion question has a sharp answer: the least length of a family of intermediate strata covering $RR$ is exactly $"cof"(2^(aleph_0))$.
+The current Lean code gives complete proofs of the stated `ICAHElementary` clauses under $not "CH"$ and of the stated `ICAHStatement` clauses under its two explicit hypotheses. Those clauses are deliberately weaker than a cofinal elementary hierarchy: their chain witnesses are constant, while their cofinal real-closed family is not proved elementary. For arbitrary covering families of subsets of $RR$ whose members have size below the continuum, the lower bound is $"cof"(2^(aleph_0))$; under $not "CH"$, this bound is attained by a monotone family of intermediate-size real-closed subfields.

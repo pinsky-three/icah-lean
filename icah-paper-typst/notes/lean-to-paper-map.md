@@ -25,6 +25,8 @@
 | `RCSubfieldStratum` | Real-closed field-bearing stratum | Definition | Sound replacement for deleted false axioms |
 | `RCFSubfieldRealElementary` / `RCFModelComplete` | Real-closed subfield inclusions into ℝ are elementary | Hypothesis / Mathlib gap | Specialized consequence of RCF model completeness; the single remaining gap |
 | `exists_cofinal_rc_family` | Honest M6: cofinal RC family | Proved | 𝔠.ord-indexed; avoids König obstruction |
+| `constElemChain` / `mkConstantSC` | Top-level chain witnesses | Proved constructions | Constant identity chains; not an increasing hierarchy |
+| `cofinal_family_length_lower_bound` / `exists_cofinal_rc_family_cof_length` | Exact covering threshold | Proved | Lower bound for arbitrary small subsets; upper bound by RC subfields; no elementarity conclusion |
 | `cofinal_family_limit_size` | Union has cardinality 𝔠 | Proved | Limit-size clause of `ICAHStatement` |
 | `ICAHStatement` | Top-level Prop-valued statement | Definition | Core claims M1/M3/M5/M6 (M6 via cofinal family) |
 | `icahTheorem` | Assembly theorem | Proved | Hypotheses: `NotCH`, `RCFModelComplete`; project declares zero axioms, enforced via `#guard_msgs` |

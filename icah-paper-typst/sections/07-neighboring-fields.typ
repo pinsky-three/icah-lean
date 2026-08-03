@@ -1,6 +1,5 @@
 #import "../src/macros.typ": *
 
-#pagebreak(weak: true)
 = Neighboring fields and analogues
 
 The ICAH architecture instantiates a pattern — carrier, closure property, well-behaved first-order theory, elementary embeddings, direct limits, cardinal bookkeeping — that has natural analogues beyond real closed fields. The closest is the p-adic side: a p-adically closed analogue would replace subfields of $RR$ by valued subfields of a p-adic ambient field, real closure by p-adic closure or henselianity, and the ring language by a valued-field language, with Macintyre's definability theory playing the role of Tarski's @macintyre1976 @marker_valued_fields. Henselian valued fields offer a broader comparison class with the same shape, and algebraically closed fields a simpler control case (whose Mathlib model theory is, notably, already complete enough to serve as the template discussed in Section 5). These analogies are deliberately deferred to future work: the core contribution stays focused on the formal Lean development around the real continuum.

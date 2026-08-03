@@ -1,9 +1,10 @@
 #import "../src/macros.typ": *
 
-#pagebreak(weak: true)
 = Conclusion, reproducibility, and engagement plan
 
-The current ICAH formalization is best presented as a rigorous formalization study rather than as a finished foundational theory. Its strongest components are already useful beyond ICAH itself: the DLS-based existence of elementary substrata of $RR$ at every intermediate cardinality (`exists_elementary_substratum`), the real-closedness of $RR$ (`Real.isRealClosed`), the existence of real-closed subfields of $RR$ of every infinite cardinality up to the continuum (`exists_rc_subfield`), the Tarski–Vaught elementarity theorems for direct limits — both relativized (`tarskiVaughtDirectLimit`) and ambient-free (`ofLevelElem`) — the direct-limit cardinality identity and closure theorem (`directLimit_card_eq_iSup`, `directLimit_card_lt_continuum`), and the $"cof"(c)$ sharpness pair for exhausting families.
+The current ICAH formalization is best presented as a rigorous formalization study rather than as a finished foundational theory. Its strongest components are already useful beyond ICAH itself: the DLS-based existence of elementary substrata of $RR$ at every intermediate cardinality (`exists_elementary_substratum`), the real-closedness of $RR$ (`Real.isRealClosed`), the existence of real-closed subfields of $RR$ of every infinite cardinality up to the continuum (`exists_rc_subfield`), the Tarski–Vaught elementarity theorems for arbitrary countable direct limits — both relativized (`tarskiVaughtDirectLimit`) and ambient-free (`ofLevelElem`) — the direct-limit cardinality identity and closure theorem (`directLimit_card_eq_iSup`, `directLimit_card_lt_continuum`), and the $"cof"(c)$ lower and upper bounds for covering subsets and real-closed subfields.
+
+The boundary of the top-level results is equally important. Both existential elementary-chain clauses use constant chains with identity transitions. The nonconstant monotone family that covers $RR$ consists of intermediate-size real-closed subfields, but its inclusions have not been proved elementary. Consequently, the present development does not construct a nonconstant cofinal elementary hierarchy, and the $"cof"(c)$ optimality result must not be described as an optimality theorem for elementary strata.
 
 The most important editorial decision is to keep the paper honest about the distinction between proved Lean results and named hypotheses. This is not a weakness: the hypothesis inventory — `NotCH` for the regime, `RCFSubfieldRealElementary` / `RCFModelComplete` for Pillar B only, both visible in type signatures, with the kernel-level audit machine-checked by `#guard_msgs` — turns an ambitious mathematical program into precise, independently attackable formalization problems. Two defects of earlier drafts — a vacuous cardinality theorem and a missed Löwenheim–Skolem shortcut — were detectable from the development's own documentation and are now repaired here.
 
@@ -13,8 +14,10 @@ The development is pinned and machine-checked:
 
 - *Toolchain*: `leanprover/lean4:v4.31.0-rc2`.
 - *Mathlib revision*: `a810615ff479602ad66b5403d179bfa805314a50` (June 2026), locked in `lake-manifest.json`.
-- *Repository*: @pinsky_icah_lean, with CI running `lake build` (which enforces the `#guard_msgs` audits), a zero-`sorry` check, and a zero-`axiom` check.
-- *Statistics*: 11 Lean modules under `ICAH/`, circa 1,800 lines of Lean, 0 axioms, 0 sorries; both main theorems audit to `[propext, Classical.choice, Quot.sound]`.
+- *Release*: repository tag `v1.0.0` at @pinsky_icah_lean; this tag is the artifact corresponding to the present paper.
+- *Paper compiler*: Typst 0.14.2, pinned and checked by the paper Makefile and CI.
+- *Continuous integration*: `lake build` (including the guarded audits), zero-`sorry` and zero-project-`axiom` checks, followed by a pinned Typst build of the manuscript.
+- *Statistics*: 11 Lean modules under `ICAH/`, circa 1,800 lines of Lean, 0 project axioms, 0 sorries; both main theorems audit to `[propext, Classical.choice, Quot.sound]`.
 
 == Declaration-to-paper mapping
 
@@ -37,8 +40,8 @@ The development is pinned and machine-checked:
   [`ofLevelElem` / `realize_ofLevel_iff`], [ambient-free chain theorem], [ZFC-pure],
   [`directLimit_card_eq_iSup`], [limit cardinality identity], [ZFC-pure],
   [`directLimit_card_lt_continuum`], [closure under countable chains], [ZFC-pure],
-  [`cofinal_family_length_lower_bound`], [sharpness, lower bound], [ZFC-pure],
-  [`exists_cofinal_rc_family(_cof_length)`], [covering families, optimal length], [`NotCH`],
+  [`cofinal_family_length_lower_bound`], [covering subsets, $"cof"(c)$ lower bound], [ZFC-pure],
+  [`exists_cofinal_rc_family(_cof_length)`], [real-closed covering family attaining the bound; no elementarity claim], [`NotCH`],
   [`cofinal_family_limit_size`], [M6 limit-size clause], [`NotCH`],
   [`ICAHElementary` / `icahElementary`], [*Theorem 1* (Pillar A)], [`NotCH`],
   [`ICAHStatement` / `icahTheorem`], [*Theorem 2* (Pillar B)], [`NotCH`, `RCFModelComplete`],

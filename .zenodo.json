@@ -1,0 +1,20 @@
+{
+  "title": "icah-lean: Lean formalization of intermediate-cardinality strata and direct limits",
+  "description": "Lean 4 and Mathlib formalization accompanying the paper Intermediate-Cardinality Strata and Direct Limits in Lean: A Formalization Study around the Continuum.",
+  "creators": [
+    {
+      "name": "Malpartida, Bregy",
+      "affiliation": "Independent Researcher / pinsky.studio"
+    }
+  ],
+  "license": "MIT",
+  "upload_type": "software",
+  "keywords": [
+    "Lean",
+    "Mathlib",
+    "model theory",
+    "real closed fields",
+    "continuum hypothesis"
+  ],
+  "version": "1.0.0"
+}
