@@ -9,7 +9,9 @@ version: 1.0.0
 date-released: 2026-08-03
 repository-code: "https://github.com/pinsky-three/icah-lean"
 url: "https://github.com/pinsky-three/icah-lean/tree/v1.0.0"
-license: MIT
+license:
+  - MIT
+  - CC-BY-4.0
 keywords:
   - Lean
   - Mathlib
@@ -23,4 +25,4 @@ preferred-citation:
       given-names: Bregy
   title: "Intermediate-Cardinality Strata and Direct Limits in Lean: A Formalization Study around the Continuum"
   year: 2026
-  url: "https://github.com/pinsky-three/icah-lean/tree/v1.0.0"
+  license: CC-BY-4.0

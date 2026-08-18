@@ -14,12 +14,26 @@ Alternative templates to consider later:
 
 ## Build
 
+The Makefile and CI require Typst **0.14.2** exactly. Homebrew's `typst`
+formula is unpinned and will fail `make build` if it is not that version.
+Install the matching GitHub release asset instead:
+
 ```bash
-brew install typst # must provide Typst 0.14.2
+# Linux x86_64 (same archive CI uses)
+curl -fL "https://github.com/typst/typst/releases/download/v0.14.2/typst-x86_64-unknown-linux-musl.tar.xz" \
+  -o /tmp/typst.tar.xz
+mkdir -p "$HOME/.local/bin"
+tar -xJf /tmp/typst.tar.xz -C /tmp --strip-components=1
+install -m 0755 /tmp/typst "$HOME/.local/bin/typst"
+export PATH="$HOME/.local/bin:$PATH"
+
+# macOS arm64: use typst-aarch64-apple-darwin.tar.xz from the same tag
+# https://github.com/typst/typst/releases/tag/v0.14.2
+
 make build
 ```
 
-The Makefile pins and verifies Typst `0.14.2`, matching CI and release `v1.0.0`.
+The version pin and SHA-256 live in this Makefile so CI cannot drift.
 
 Output:
 

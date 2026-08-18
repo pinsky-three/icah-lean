@@ -1,13 +1,14 @@
 {
   "title": "icah-lean: Lean formalization of intermediate-cardinality strata and direct limits",
-  "description": "Lean 4 and Mathlib formalization accompanying the paper Intermediate-Cardinality Strata and Direct Limits in Lean: A Formalization Study around the Continuum.",
+  "description": "Lean 4 and Mathlib formalization accompanying the paper Intermediate-Cardinality Strata and Direct Limits in Lean: A Formalization Study around the Continuum. Dual-licensed: MIT for Lean sources, build configuration, and automation; CC BY 4.0 for the manuscript under icah-paper-typst/, the top-level README, and docs/.",
   "creators": [
     {
       "name": "Malpartida, Bregy",
       "affiliation": "Independent Researcher / pinsky.studio"
     }
   ],
-  "license": "MIT",
+  "notes": "This repository is dual-licensed. MIT covers Lean source, build configuration, and automation. CC BY 4.0 covers icah-paper-typst/, README.md, and docs/. See LICENSE. Zenodo's GitHub integration accepts a single license identifier; the deposit metadata therefore records other-open and the SPDX split is the source of truth.",
+  "license": "other-open",
   "upload_type": "software",
   "keywords": [
     "Lean",

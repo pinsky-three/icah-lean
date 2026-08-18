@@ -126,7 +126,7 @@ Together with the lower bound for infinite types, this supports the concrete bas
 == What the top-level chain clauses witness
 
 #proposition[
-  The `elementary_chain` field of `icahElementary` is witnessed by `constElemChain S`, where $S prec RR$ has cardinality $aleph_1$. The corresponding field of `icahTheorem` is witnessed by `mkConstantSC R`, where $R$ is one intermediate-size real-closed subfield. Both chains use identity successor maps.
+  The `elementary_chain` field of `icahElementary` is witnessed by `constElemChain S`, where $S prec RR$ has cardinality $aleph_1$. The corresponding field of `icahTheorem` is witnessed by `mkConstantSC R.toSubfieldStratum`, where $R$ is one intermediate-size real-closed subfield (`RCSubfieldStratum`). Both chains use identity successor maps.
 ]
 
 #remark[

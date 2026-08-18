@@ -65,7 +65,7 @@ From these successor maps, the project defines two related systems:
 The lemma `embLE_eq_sysEmb` proves that these two constructions agree as functions. This is a small but important bridge: the proof-relevant elementary embedding API and the directed-colimit API are not automatically the same object.
 
 #remark[
-  The chain API and its theorems are general, but the top-level existential witnesses are not increasing: `icahElementary` uses `constElemChain S`, and `icahTheorem` uses `mkConstantSC R`. Thus the assembly theorems establish the literal existence clauses in their structures without constructing a hierarchy of distinct levels.
+  The chain API and its theorems are general, but the top-level existential witnesses are not increasing: `icahElementary` uses `constElemChain S`, and `icahTheorem` uses `mkConstantSC R.toSubfieldStratum` for an intermediate-size real-closed `R`. Thus the assembly theorems establish the literal existence clauses in their structures without constructing a hierarchy of distinct levels.
 ]
 
 == Direct limit

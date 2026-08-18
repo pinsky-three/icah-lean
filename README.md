@@ -14,7 +14,7 @@ The artifact for the paper is release **v1.0.0**. It pins:
 - Lean `v4.31.0-rc2` in `lean-toolchain`;
 - Mathlib revision `a810615ff479602ad66b5403d179bfa805314a50` in
   `lake-manifest.json`;
-- Typst `0.14.2` in `icah-paper-typst/Makefile` and CI.
+- Typst `0.14.2` in `icah-paper-typst/Makefile` (CI reads the same pin).
 
 ## What is proved
 
@@ -128,7 +128,8 @@ The expected final counts are both zero.
 
 ## Build the paper
 
-Install exactly Typst `0.14.2`, then run:
+Install exactly Typst `0.14.2` from the pinned GitHub release (see
+`icah-paper-typst/README.md`; Homebrew is unpinned), then run:
 
 ```bash
 make -C icah-paper-typst build
@@ -149,9 +150,12 @@ repeated release builds are byte-for-byte reproducible.
 See `docs/UPSTREAMING.md` for the proposed Mathlib engagement sequence.
 
 The repository includes `.zenodo.json` metadata so the tagged release can be
-archived after the maintainer enables the Zenodo–GitHub integration. No DOI is
-claimed until Zenodo creates the deposition; once minted, it should be added to
-this README, `CITATION.cff`, and the paper bibliography.
+archived after the maintainer enables the Zenodo–GitHub integration. The
+deposit records license `other-open` because the tree is dual-licensed (MIT
+plus CC BY 4.0); after the first deposit, add both SPDX licenses in the
+Zenodo UI if the integration flattened them. No DOI is claimed until Zenodo
+creates the deposition; once minted, it should be added to this README,
+`CITATION.cff`, and the paper bibliography.
 
 ## License and citation
 
