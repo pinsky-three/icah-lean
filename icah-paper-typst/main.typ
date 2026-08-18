@@ -2,8 +2,8 @@
 #import "src/macros.typ": *
 
 #show: ams-article.with(
-  title: [Intermediate-Cardinality Strata and Direct Limits in Lean: A Formalization Study around the Continuum],
-  running-head: [ICAH: Formalization Study around the Continuum],
+  title: [Elementary strata of the continuum under $not "CH"$: a Lean formalization study],
+  running-head: [Elementary strata of the continuum in Lean],
   authors: (
     (
       name: "Bregy Malpartida",
@@ -14,12 +14,10 @@
     ),
   ),
   abstract: [
-    This article presents a Lean 4 formalization study of an Intermediate-Cardinality Arithmetic Hypothesis (ICAH) under the negation of the Continuum Hypothesis. *Pillar A* constructs elementary substructures of $RR$ at every intermediate cardinality by Mathlib's downward Löwenheim–Skolem theorem. *Pillar B* constructs real-closed subfields of every infinite cardinality up to the continuum and is conditional, for its elementarity clause, on the $RR$-specialized consequence of real-closed-field model completeness that such subfield inclusions are elementary. The development proves Tarski–Vaught elementarity theorems for arbitrary countable elementary chains, a direct-limit cardinality identity, and closure below the continuum. The elementary-chain existence fields in both top-level theorems are witnessed by constant chains; they do not assert a strictly increasing hierarchy. Separately, under $not "CH"$ the development constructs a nonconstant monotone family of intermediate-size real-closed subfields covering $RR$. It proves that every covering family of subsets of $RR$ of size below the continuum has at least $"cof"(2^(aleph_0))$ members and that a real-closed-subfield covering family of exactly that length exists. Elementarity of this cofinal family is not proved. The project declares zero project axioms: `NotCH` and the Pillar B model-theory condition are explicit hypotheses, and guarded kernel audits exclude hidden assumptions such as `sorryAx`.
+    We formalize, in Lean 4 and Mathlib, the elementary-substructure picture of the real continuum under $not "CH"$. Downward Löwenheim–Skolem yields elementary substrata of $RR$ at every intermediate cardinality. Nested elementary substructures of a common model form an elementary pair, so these strata assemble into a strictly increasing $NN$-chain and into a monotone covering family of length $"cof"(2^(aleph_0))$ whose inclusions are elementary. Named real-closed subfields of every infinite cardinality up to the continuum are constructed separately; elementarity of those algebraic inclusions remains conditional on a Mathlib gap (model completeness of RCF). The project declares no axioms: hypotheses appear in type signatures, and kernel audits are machine-checked in CI.
   ],
   bibliography: bibliography("refs.bib"),
 )
-
-#align(center)[Version 1.0.0 · August 2026]
 
 #include "sections/01-introduction.typ"
 #include "sections/02-background.typ"

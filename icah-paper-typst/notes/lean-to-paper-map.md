@@ -10,8 +10,7 @@
 | `subfieldToSAF` | Algebra-to-size bridge | Construction | Converts subfields into size-aware fields |
 | `fieldOnSubfieldStratum` | Replacement for abstract field axiom in subfield case | Proved | Key for reducing assumptions |
 | `algReal_card_le_aleph0` | Concrete base-field cardinality | Proved | Real algebraic numbers are countable |
-| `graphDefinable_add` | Definability of addition graph | Proved | Technical model-theory API use |
-| `graphDefinable_mul` | Definability of multiplication graph | Proved | Same as above |
+| `LRing` / `LOR` | Ring language | Definition | `LOR` is a compatibility alias for `LRing := Language.ring` |
 | `ElemChain` | Elementary chain architecture | Definition | Core model-theoretic object |
 | `embLE` | Composite elementary embeddings | Construction | Preserves elementarity |
 | `embLE_eq_sysEmb` | Coherence with directed-system API | Proved | Important Lean/API bridge |
@@ -23,10 +22,16 @@
 | `exists_rc_subfield` | RC subfields of every infinite cardinality ≤ 𝔠 | Proved | Strengthens former `subfieldStratumExists` axiom |
 | `fieldOnStratum` | Field on arbitrary stratum | Proved | Equiv-transport; formerly an axiom |
 | `RCSubfieldStratum` | Real-closed field-bearing stratum | Definition | Sound replacement for deleted false axioms |
-| `RCFSubfieldRealElementary` / `RCFModelComplete` | Real-closed subfield inclusions into ℝ are elementary | Hypothesis / Mathlib gap | Specialized consequence of RCF model completeness; the single remaining gap |
+| `RCFSubfieldRealElementary` / `RCFModelComplete` | Real-closed subfield inclusions into ℝ are elementary | Hypothesis / Mathlib gap | Specialized consequence of RCF model completeness; Pillar B only; Zulip dedup before claiming uniqueness |
+| `elementaryInclusion` | Nested elementary pair | Proved | `S ⊆ T`, both `≺ M` ⇒ `S ≺ T` |
+| `directed_iSup_isElementary` | Directed unions stay elementary | Proved | Tarski–Vaught for unions of substrata of ℝ |
+| `strictElemChain` | Strict ℕ-chain witness | Proved | Replaces constant-chain witnesses in both top-level theorems |
+| `elemSubstratum_models_thReal` | Substrata model Th(ℝ) | Proved | First-order RCF; native `IsRealClosed` not transferred |
+| `exists_cofinal_elem_family` | Cofinal elementary family | Proved | 𝔠.ord-indexed; inclusions elementary by nesting |
+| `exists_cofinal_elem_family_cof_length` | Optimal-length elementary covering | Proved | Length `cf(𝔠)` |
 | `exists_cofinal_rc_family` | Honest M6: cofinal RC family | Proved | 𝔠.ord-indexed; avoids König obstruction |
-| `constElemChain` / `mkConstantSC` | Top-level chain witnesses | Proved constructions | Constant identity chains; not an increasing hierarchy |
-| `cofinal_family_length_lower_bound` / `exists_cofinal_rc_family_cof_length` | Exact covering threshold | Proved | Lower bound for arbitrary small subsets; upper bound by RC subfields; no elementarity conclusion |
+| `exists_cofinal_rc_family_elementary` | RC family with elementary inclusions | Proved | Needs `RCFModelComplete` + nesting |
+| `cofinal_family_length_lower_bound` / `exists_cofinal_rc_family_cof_length` | Exact covering threshold | Proved | Lower bound for arbitrary small subsets; RC upper bound |
 | `cofinal_family_limit_size` | Union has cardinality 𝔠 | Proved | Limit-size clause of `ICAHStatement` |
-| `ICAHStatement` | Top-level Prop-valued statement | Definition | Core claims M1/M3/M5/M6 (M6 via cofinal family) |
-| `icahTheorem` | Assembly theorem | Proved | Hypotheses: `NotCH`, `RCFModelComplete`; project declares zero axioms, enforced via `#guard_msgs` |
+| `ICAHStatement` | Top-level Prop-valued statement | Definition | M1/M3/M5/M6 plus elementary RC family |
+| `icahTheorem` | Assembly theorem | Proved | Hypotheses: `NotCH`, `RCFModelComplete`; RCF used only for the last clause |

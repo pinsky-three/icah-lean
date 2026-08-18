@@ -169,7 +169,7 @@ lemma mem_elemSubstratumSubfield {S : LOR.ElementarySubstructure ℝ} {x : ℝ} 
     formalized here; that is a packaging gap, not a first-order gap. -/
 theorem elemSubstratum_models_thReal (S : LOR.ElementarySubstructure ℝ)
     (φ : LOR.Sentence) (hφ : ℝ ⊨ φ) : S ⊨ φ :=
-  (realize_sentence S φ).mpr hφ
+  (S.subtype.map_sentence φ).mpr hφ
 
 /-! ### Nesting: elementary substructures of a common model form an elementary pair -/
 

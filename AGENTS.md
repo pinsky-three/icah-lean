@@ -15,14 +15,14 @@ icah-lean/
 │   ├── Axioms.lean            # NotCH : Prop (hypothesis, NOT an axiom) + intermediate cardinal
 │   ├── SizeAwareField.lean    # SizeAwareField structure
 │   ├── Strata.lean            # Stratum structure + M1 cardinal lemmas + König helper
-│   ├── Definability.lean      # LOR definability kernel (M2)
+│   ├── Definability.lean      # LRing/LOR definability kernel (M2)
 │   ├── RealClosed.lean        # IsRealClosed ℝ + root-closed subfield criterion (M4)
 │   ├── FieldOnStratum.lean    # SubfieldStratum, relAlgebraic, exists_rc_subfield,
 │   │                          #   fieldOnStratum theorem, RCFModelComplete : Prop (M3+M4)
 │   ├── ElementaryChain.lean   # ElemChain, tarskiVaughtDirectLimit, ambient-free
 │   │                          #   ofLevelElem, directLimit_card_eq_iSup/_lt_continuum (M5)
-│   ├── ElementaryStrata.lean  # Pillar A: DLS elementary substrata, icahElementary
-│   ├── CofinalFamily.lean     # 𝔠.ord-indexed cofinal RC family + cf(𝔠) optimality (M6)
+│   ├── ElementaryStrata.lean  # Pillar A: DLS, nesting, strict ℕ-chain, icahElementary
+│   ├── CofinalFamily.lean     # cofinal elementary/RC families + cf(𝔠) optimality (M6)
 │   └── Main.lean              # ICAHStatement + icahTheorem + per-theorem #guard_msgs audits
 ├── .github/workflows/ci.yml   # CI: build + axiom audit + sorry count + axiom count
 ├── docs/UPSTREAMING.md        # Zulip draft + Mathlib PR sequence
@@ -43,13 +43,16 @@ Axioms ──► SizeAwareField ──► Strata ──► Definability ──�
 
 ### Two-pillar architecture
 
-* **Pillar A** (`ElementaryStrata.lean`): the *semantic* ICAH. Strata are
-  elementary substructures of ℝ produced by Mathlib's downward
+* **Pillar A** (`ElementaryStrata.lean`): the *semantic* development. Strata
+  are elementary substructures of ℝ produced by Mathlib's downward
   Löwenheim–Skolem theorem at every intermediate cardinality; elementarity is
-  free by construction. Main theorem: `icahElementary (hCH : NotCH)`.
-* **Pillar B** (`FieldOnStratum.lean` + `Main.lean`): the *algebraic
-  realization*. Strata are relative algebraic closures of generated subfields,
-  with native real-closed instances. Main theorem:
+  free by construction. Nesting + directed unions yield a strictly increasing
+  ℕ-chain and a cofinal elementary family of length `cf(𝔠)`. Main theorem:
+  `icahElementary (hCH : NotCH)`.
+* **Pillar B** (`FieldOnStratum.lean` + `Main.lean`): the *conditional
+  algebraic realization*. Strata are relative algebraic closures of generated
+  subfields, with native real-closed instances. Elementarity of those named
+  inclusions uses `RCFModelComplete`. Main theorem:
   `icahTheorem (hCH : NotCH) (hMC : RCFModelComplete)`.
 
 ---
@@ -93,9 +96,9 @@ curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh 
 | `RealClosed.lean` | 2 theorems + helpers | ✅ `Real.isRealClosed` **proved** (IVT + sqrt) |
 | `FieldOnStratum.lean` | 3 structures, 1 def (`RCFModelComplete : Prop`), ~12 defs/lemmas/theorems | ✅ M3+M4: `fieldOnStratum`, `exists_rc_subfield`, `relAlgebraic_isRealClosed` proved |
 | `ElementaryChain.lean` | 2 structures, ~14 defs/lemmas/theorems | ✅ M5: `tarskiVaughtDirectLimit` + ambient-free `ofLevelElem` **proved**; `directLimit_card_eq_iSup`, `directLimit_card_lt_continuum` |
-| `ElementaryStrata.lean` | 1 structure, ~8 defs/lemmas/theorems | ✅ Pillar A: `exists_elementary_substratum` (DLS), `elemSubstratumSubfield`, `icahElementary` |
-| `CofinalFamily.lean` | 5 theorems + helpers | ✅ Honest M6 + cf(𝔠) optimality pair |
-| `Main.lean` | 1 structure, 1 def, 1 theorem, 15 audits | ✅ `icahTheorem` proved; kernel-only axiom sets locked by per-theorem `#guard_msgs` |
+| `ElementaryStrata.lean` | nesting, directed unions, `strictElemChain`, `elemSubstratum_models_thReal`, `icahElementary` | ✅ Pillar A complete: DLS + strict ℕ-chain |
+| `CofinalFamily.lean` | RC + elementary cofinal families, cf(𝔠) pair | ✅ Honest M6 + elementary covering family |
+| `Main.lean` | `ICAHStatement`, `icahTheorem`, guarded audits | ✅ Strict-chain M5; RC-elementary clause consumes `RCFModelComplete` |
 
 ### Hypotheses (the project declares **zero** axioms; `make axiom-count` = 0)
 

@@ -1,6 +1,6 @@
 # ICAH Typst Paper Project
 
-Publication source for the Lean formalization of the Intermediate-Cardinality Arithmetic Hypothesis (ICAH): elementary substrata, real-closed subfields, elementary-chain direct limits, and cofinality at the continuum.
+Publication source for *Elementary strata of the continuum under ¬CH: a Lean formalization study*: elementary substrata, named real-closed subfields, elementary-chain direct limits, and cofinal families of length `cf(𝔠)`.
 
 ## Template choice
 
@@ -70,15 +70,15 @@ Lead with the proved Lean content, not with the philosophical ambition.
 
 Recommended headline result:
 
-> `directLimit_card_eq_iSup`: the cardinality of a countable direct limit equals the supremum of its level cardinalities when that supremum is infinite, together with `directLimit_card_lt_continuum`, the König-based closure theorem below the continuum.
+> Under `¬CH`, a strictly increasing ℕ-chain of elementary substrata of `ℝ` and a cofinal elementary family of length `cf(𝔠)`, plus the ambient-free chain theorem `ofLevelElem`.
 
 Recommended framing:
 
-> A formalization study that separates general elementary-chain theorems, constant-chain witnesses in the top-level assembly results, a nonconstant cofinal family of real-closed subfields not yet proved elementary, explicit hypotheses, and Mathlib contribution targets.
+> A formalization study that separates general elementary-chain theorems, a strictly increasing countable chain, a cofinal elementary family of optimal length, named real-closed subfields (conditional pillar), explicit hypotheses, and Mathlib contribution targets.
 
 ## Release checks
 
 1. Run `make build`, `make sorry-count`, and `make axiom-count` in the Lean repository.
 2. Run `make build` here with Typst 0.14.2.
-3. Confirm that the manuscript cites release tag `v1.0.0`.
-4. Confirm that the top-level constant chains are never conflated with the nonconstant cofinal real-closed family.
+3. Confirm that the manuscript does not advertise `v1.0.0` as the current artifact.
+4. Confirm that the top-level chain witnesses are the strictly increasing `strictElemChain`, and that the elementary cofinal family is stated.

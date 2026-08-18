@@ -41,4 +41,5 @@
 #let R = $RR$
 #let Q = $QQ$
 #let Fomega = $F_omega$
-#let LOR = $cal(L)_("or")$
+#let LRing = $cal(L)_("Ring")$
+#let LOR = LRing

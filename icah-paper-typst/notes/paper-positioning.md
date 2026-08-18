@@ -2,36 +2,29 @@
 
 ## Strongest framing
 
-**A Lean formalization study of intermediate-cardinality strata under ¬CH, with general elementary-chain theorems, exact direct-limit cardinal accounting, and a transparent hypothesis inventory.**
+**Elementary strata of the continuum under ¬CH: a Lean formalization study.**
 
-This is stronger and more credible than presenting ICAH as a completed new mathematical theory.
+This is stronger and more credible than presenting ICAH as a completed new mathematical theory or axiom candidate.
 
 ## What to foreground
 
-1. `directLimit_card_eq_iSup` and `directLimit_card_lt_continuum` as the cardinal-arithmetic headline.
-2. `ofLevelElem` and `tarskiVaughtDirectLimit` as the general elementary-chain results.
-3. `exists_elementary_substratum` and `exists_rc_subfield` as the two cardinal-controlled existence theorems.
-4. The exact `cf(𝔠)` threshold for covering subsets, attained by real-closed subfields.
-5. The explicit hypothesis inventory as a research roadmap.
+1. `strictElemChain` and `exists_cofinal_elem_family_cof_length` as the informal picture, now formalized.
+2. `elementaryInclusion` and `directed_iSup_isElementary` as the cheap lemmas that unlock it.
+3. `ofLevelElem` and `tarskiVaughtDirectLimit` as the general elementary-chain results.
+4. `exists_elementary_substratum` and `exists_rc_subfield` as the two cardinal-controlled existence theorems.
+5. The exact `cf(𝔠)` threshold, attained by both elementary substrata and named real-closed subfields.
+6. The explicit hypothesis inventory as a research roadmap; Pillar B is the conditional algebraic pillar.
 
 ## Boundary that must remain explicit
 
-- The top-level chain witnesses are constant.
-- The cofinal real-closed family is nonconstant but not proved elementary.
-- No current theorem constructs a nonconstant cofinal elementary hierarchy.
-- The `cf(𝔠)` sharpness theorem is not stated for elementary strata.
+- Pillar A needs only `NotCH`.
+- Pillar B's named algebraic inclusions are elementary only given `RCFModelComplete`.
+- Elementary substrata model `Th(ℝ)` (first-order RCF); native `IsRealClosed` transfer is not formalized.
+- Do not claim the RCF gap is uniquely remaining in Mathlib until the Zulip check returns.
 
-## What to avoid in the first draft
+## What to avoid
 
 - Do not overclaim novelty in set theory.
-- Do not claim ICAH is independent, consistent, or complete beyond the formal assumptions currently used.
-- Do not describe the constant-chain witnesses as a hierarchy.
-- Do not center the optional physics proxy.
+- Do not restore "Hypothesis" branding as an axiom-candidate comparison.
+- Do not describe constant-chain objects as the top-level witnesses.
 - Do not present p-adic analogies as part of the proof; keep them as future work.
-
-## Possible venues/audiences
-
-- Lean/mathlib community note: emphasize API gaps and reusable theorems.
-- Formalized mathematics workshop: emphasize proof architecture and axiom inventory.
-- Logic/model theory preprint: emphasize elementary chains, RCFs, and cardinal-controlled subfields.
-- Broader arXiv preprint: use the formalization as the core evidence, but keep claims conservative.

@@ -17,7 +17,7 @@ The Lean proof uses the standard inequality $aleph_0 < aleph_1$, the theorem $al
 
 == Real closed fields and definability
 
-Real closed fields are the algebraic and model-theoretic setting closest to the ordered real field. They admit quantifier-elimination results and provide the natural language in which order, addition, multiplication, and definability can be studied together @vddries1988 @marker2002.
+Real closed fields are the algebraic and model-theoretic setting closest to the ordered real field. They admit quantifier elimination @tarski1951 and provide the natural language in which order, addition, multiplication, and definability can be studied together @vddries1988 @marker2002.
 
 ICAH uses this background in a restrained way. The code does not merely assume every bare subset of $RR$ is a field. Instead, it introduces `SubfieldStratum`, which requires the carrier set to be the underlying set of a `Subfield RR`. This is the right formal move: closure under field operations is obtained from the subfield structure rather than reconstructed ad hoc.
 
@@ -29,4 +29,4 @@ An elementary substructure $S prec M$ satisfies the same first-order formulas as
 
 An elementary chain is a sequence of structures connected by elementary embeddings. The Tarski–Vaught elementary chain theorem asserts that the union (or directed limit) of such a chain is an elementary extension of each level @chang_keisler @weiss_model_theory.
 
-The Lean project packages this through `ElemChain`, where each level carries an `LOR`-structure and each successor map is an elementary embedding. The direct limit is then implemented using Mathlib's `Language.DirectLimit` API. The project proves the chain theorem *relativized to the ambient model $RR$* (`tarskiVaughtDirectLimit`); an earlier draft misattributed this result to Łoś, whose theorem concerns ultraproducts — the misnomer has been corrected throughout.
+The Lean project packages this through `ElemChain`, where each level carries an #LRing structure and each successor map is an elementary embedding. The direct limit is then implemented using Mathlib's `Language.DirectLimit` API. The project proves the chain theorem *relativized to the ambient model $RR$* (`tarskiVaughtDirectLimit`); an earlier draft misattributed this result to Łoś, whose theorem concerns ultraproducts — the misnomer has been corrected throughout. A companion lemma (`directed_iSup_isElementary`) records the Tarski–Vaught test for directed unions of elementary substrata of $RR$: an existential witnessed in $RR$ with parameters from the union has its parameters in some member, which is already $prec RR$.

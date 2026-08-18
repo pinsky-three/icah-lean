@@ -1,15 +1,21 @@
-# ICAH Lean
+# Elementary strata of the continuum (Lean)
 
-Lean 4 + Mathlib formalization of intermediate-cardinality strata of the real
-continuum under `¬CH`, with elementary-substructure, real-closed-field,
-direct-limit, and cofinality results.
+Lean 4 + Mathlib formalization of elementary substrata of the real
+continuum under `¬CH`, with real-closed-field, direct-limit, and
+cofinality results.
 
-The repository accompanies the paper *Intermediate-Cardinality Strata and
-Direct Limits in Lean: A Formalization Study around the Continuum*.
+The repository accompanies the paper *Elementary strata of the continuum
+under ¬CH: a Lean formalization study*. The historical project name
+"ICAH" is retained in module paths.
 
 ## Publication release
 
-The artifact for the paper is release **v1.0.0**. It pins:
+The manuscript corresponds to the post-referee Lean revision (strictly
+increasing elementary chains and a cofinal elementary family). A
+**v1.1.0** tag should be cut after the Zulip dedup check. The earlier
+**v1.0.0** artifact is superseded.
+
+Pinned toolchain:
 
 - Lean `v4.31.0-rc2` in `lean-toolchain`;
 - Mathlib revision `a810615ff479602ad66b5403d179bfa805314a50` in
@@ -25,77 +31,78 @@ The development has two complementary pillars.
 `ICAH.icahElementary (h : NotCH)` proves, from `¬CH` alone:
 
 - an intermediate cardinal exists;
-- for every intermediate cardinal `κ`, an elementary substructure of `ℝ` in
-  the first-order ring language exists with cardinality exactly `κ`;
-- elementary substrata of `ℝ` are carriers of subfields;
-- a countable elementary-chain direct limit stays below the continuum when all
-  levels do;
+- for every intermediate cardinal `κ`, an elementary substructure of `ℝ`
+  in the first-order ring language exists with cardinality exactly `κ`;
+- elementary substrata of `ℝ` are carriers of subfields and model
+  `Th(ℝ)` (hence first-order RCF);
+- a *strictly increasing* `ℕ`-indexed elementary chain of intermediate
+  strata whose direct limit is elementarily equivalent to `ℝ`;
+- a countable elementary-chain direct limit stays below the continuum
+  when all levels do;
 - every real belongs to some intermediate-size elementary substratum.
 
-The elementary-chain existence field in this top-level theorem is witnessed by
-the **constant chain** at one elementary substratum. It is not a strictly
-increasing or cofinal hierarchy.
+Separately, still from `¬CH` alone:
 
-### Pillar B: real-closed subfields
+- `exists_cofinal_elem_family`: a monotone `𝔠.ord`-indexed covering
+  family of intermediate elementary substrata, with elementary
+  inclusions by nesting;
+- `exists_cofinal_elem_family_cof_length`: the same picture at length
+  `cf(𝔠)`.
 
-`ICAH.icahTheorem (hCH : NotCH) (hMC : RCFModelComplete)` proves the algebraic
-packaging from `¬CH` and one explicit model-theory hypothesis. Its ingredients
-include:
+### Pillar B: named real-closed subfields
+
+`ICAH.icahTheorem (hCH : NotCH) (hMC : RCFModelComplete)` is the
+*conditional* algebraic packaging. Its ingredients include:
 
 - `Real.isRealClosed`: `ℝ` is real closed;
 - `exists_rc_subfield`: for every `ℵ₀ ≤ κ ≤ 𝔠`, a real-closed subfield
   of `ℝ` of cardinality exactly `κ` exists;
 - `fieldOnStratum`: every `Stratum` carries a transported
   `SizeAwareField` structure;
-- general Tarski–Vaught theorems for arbitrary countable elementary chains;
-- an exact cardinality identity for their direct limits.
+- general Tarski–Vaught theorems for arbitrary countable elementary
+  chains;
+- an exact cardinality identity for their direct limits;
+- `exists_cofinal_rc_family`: a named real-closed covering family;
+- `exists_cofinal_rc_family_elementary`: under `RCFModelComplete`, that
+  family has elementary inclusions (`nestedRCEmbedding`).
 
-The chain used inside `icahTheorem` is again a **constant chain**, this time at
-one intermediate-size real-closed subfield. The hypothesis
-`RCFSubfieldRealElementary` (compatibility name `RCFModelComplete`) supplies
-elementarity of that subfield's inclusion into `ℝ`.
+The M5 chain witness is the Pillar A strict chain. The RCF hypothesis
+is used only for elementary inclusions of the named real-closed family.
 
-### Cofinal family and the `cf(𝔠)` threshold
+### Cofinal families and the `cf(𝔠)` threshold
 
-Separately, `exists_cofinal_rc_family` constructs a nonconstant monotone family
-of intermediate-size real-closed subfields whose union is all of `ℝ`.
-
-The precise optimality statement is:
-
-- any covering family of subsets of `ℝ`, each of cardinality `< 𝔠`, has at
-  least `cf(𝔠)` members;
-- under `¬CH`, a monotone covering family of intermediate-size real-closed
-  subfields with exactly `cf(𝔠)` members exists.
-
-The inclusions in this cofinal family are **not proved elementary**. The current
-development therefore does not construct a nonconstant cofinal elementary
-hierarchy.
+Any covering family of subsets of `ℝ`, each of cardinality `< 𝔠`, has
+at least `cf(𝔠)` members. Under `¬CH`, that bound is attained both by
+elementary substrata and by named real-closed subfields.
 
 ## Explicit hypotheses and audit status
 
 The project declares **zero project axioms** and contains **zero sorries**.
-The two mathematical assumptions are ordinary propositions passed explicitly
-to the theorems that need them:
+The two mathematical assumptions are ordinary propositions passed
+explicitly to the theorems that need them:
 
 | Hypothesis | Role |
 |---|---|
 | `ICAH.NotCH` | The `¬CH` regime, defined as `continuum ≠ aleph 1` |
 | `ICAH.RCFSubfieldRealElementary` / `ICAH.RCFModelComplete` | The inclusion of every real-closed subfield of `ℝ` into `ℝ` is elementary in the ring language; used only by Pillar B |
 
-The remaining RCF statement is a classical consequence of model completeness
-or quantifier elimination for real-closed fields, but it is not yet available
-in the required Mathlib `ModelTheory` form.
+The remaining RCF statement is a classical consequence of model
+completeness or quantifier elimination for real-closed fields
+(Tarski 1951), but it is not yet available in the required Mathlib
+`ModelTheory` form in the pinned revision. A Zulip dedup check is
+scheduled before claiming uniqueness of this gap.
 
-`ICAH/Main.lean` locks the dependency sets of the flagship declarations with
-`#guard_msgs in #print axioms`. The expected kernel dependencies are:
+`ICAH/Main.lean` locks the dependency sets of the flagship declarations
+with `#guard_msgs in #print axioms`. The expected kernel dependencies
+are:
 
 ```text
 [propext, Classical.choice, Quot.sound]
 ```
 
-Because `NotCH` and `RCFModelComplete` are theorem parameters rather than
-environment axioms, they appear in type signatures rather than in this kernel
-dependency list.
+Because `NotCH` and `RCFModelComplete` are theorem parameters rather
+than environment axioms, they appear in type signatures rather than in
+this kernel dependency list.
 
 ## Repository layout
 
@@ -103,12 +110,12 @@ dependency list.
 ICAH/Axioms.lean            NotCH and intermediate-cardinal lemmas
 ICAH/SizeAwareField.lean    cardinal-aware field packaging
 ICAH/Strata.lean            strata and cardinal bounds
-ICAH/Definability.lean      ring-language definability kernel
+ICAH/Definability.lean      ring-language kernel (`LRing` / `LOR`)
 ICAH/RealClosed.lean        real-closedness of ℝ and root criterion
 ICAH/FieldOnStratum.lean    real-closed subfields and Pillar B hypothesis
 ICAH/ElementaryChain.lean   elementary chains and direct limits
-ICAH/ElementaryStrata.lean  DLS substrata and Pillar A
-ICAH/CofinalFamily.lean     cofinal families and cf(𝔠) optimality
+ICAH/ElementaryStrata.lean  DLS substrata, nesting, strict chain, Pillar A
+ICAH/CofinalFamily.lean     cofinal elementary/RC families and cf(𝔠)
 ICAH/Main.lean              Pillar B assembly and guarded audits
 icah-paper-typst/           publication manuscript
 ```
@@ -141,11 +148,12 @@ repeated release builds are byte-for-byte reproducible.
 
 ## Further work
 
-- Formalize the real-closed-subfield elementarity theorem in Mathlib.
-- Construct a nonconstant cofinal family of elementary substructures and relate
-  it to the real-closed family.
-- Generalize the local countable direct-limit elementarity theorems to the most
-  reusable directed-system statement for upstreaming.
+- Formalize the real-closed-subfield elementarity theorem in Mathlib
+  (after the Zulip dedup check).
+- Transfer a ring-language RCF axiomatization to a native
+  `IsRealClosed` instance on elementary substrata.
+- Generalize the local countable direct-limit elementarity theorems to
+  the most reusable directed-system statement for upstreaming.
 
 See `docs/UPSTREAMING.md` for the proposed Mathlib engagement sequence.
 

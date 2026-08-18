@@ -48,7 +48,7 @@ if the RCF discussion takes off).
 > 4. **The gap we did *not* close** (long-term target): the real-subfield
 >    elementarity consequence of model completeness of RCF. Minimized
 >    statement in Mathlib vocabulary, where
->    `LOR := Language.ring`:
+>    `LRing := Language.ring` (compatibility alias `LOR`):
 >
 >    ```lean
 >    /-- The inclusion of every real-closed subfield of ℝ into ℝ is elementary

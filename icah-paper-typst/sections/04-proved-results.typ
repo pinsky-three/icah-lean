@@ -28,8 +28,36 @@ This section separates fully proved Lean results from hypotheses. Section 8 cont
 ]
 
 #remark[
-  Closure under $+, dot, -, 0, 1$ is the substructure property; closure under inverses is a transfer of the formula $exists y, x dot y = 1$ along elementarity. This is the satisfaction-to-structure bridge that gives Pillar A strata an algebraic identity, partially compensating for their abstract Skolem-hull origin.
+  Closure under $+, dot, -, 0, 1$ is the substructure property; closure under inverses is a transfer of the formula $exists y, x dot y = 1$ along elementarity. This is the satisfaction-to-structure bridge that gives Pillar A strata an algebraic identity.
 ]
+
+#theorem[
+  `elemSubstratum_models_thReal` (ZFC-pure): an elementary substratum of $RR$ satisfies every sentence true in $RR$. In particular it models $op("Th")(RR)$, which contains the first-order axiomatization of real-closed fields in #LRing.
+]
+
+#remark[
+  RCF is a first-order theory in the ring language (order defined via squares; the axiom schema is the ring axioms, every nonnegative element is a square, and odd-degree polynomials have roots). An elementary substructure of $RR$ therefore satisfies RCF and is real closed in the first-order sense. Native Lean `IsRealClosed` instance transfer along this observation is not formalized; that is a packaging gap, not a first-order gap. Pillar B remains the place where *named* real-closed subfields carry `IsRealClosed` instances.
+]
+
+== Nesting, directed unions, and a strictly increasing chain
+
+#lemma[
+  `elementaryInclusion` (ZFC-pure): if $S subset.eq T$ are both elementary substructures of a common model $M$, then $S prec T$. Satisfaction in $S$ and in $T$ both reduce to satisfaction in $M$.
+]
+
+#theorem[
+  `directed_iSup_isElementary` (ZFC-pure): the directed supremum of a nonempty family of elementary substructures of $RR$ is again elementary in $RR$. Specialization: the union of a nonempty monotone chain is elementary (`iUnionChainElem`).
+]
+
+#remark[
+  This is the Tarski–Vaught test verbatim: an existential witnessed in $RR$ with parameters from the union has its (finitely many) parameters in some common member, which is already $prec RR$.
+]
+
+#construction[
+  `strictElemChain` (under `NotCH`): a strictly increasing $NN$-indexed elementary chain of $aleph_1$-sized substrata of $RR$. Start from DLS at $aleph_1$; since $aleph_1 < c$, pick $x in.not S_n$; apply `exists_elementary_substratum_extending` to $S_n union {x}$. Successor maps are nesting inclusions. The direct limit is elementarily equivalent to $RR$ (`strictElemChain_directLim_equiv`).
+]
+
+This construction is the witness of the chain clauses in both top-level theorems.
 
 == Concrete synthetic stratum
 
@@ -85,16 +113,6 @@ The technical point is that the carrier equality is treated as a propositional e
 
 Together with the lower bound for infinite types, this supports the concrete base object `algRealSAF`, a countable size-aware field outside the intermediate-cardinality hierarchy.
 
-== Definability of addition and multiplication
-
-#lemma[
-  `graphDefinable_add` and `graphDefinable_mul`: the graphs of addition and multiplication on $RR$ are first-order definable in the ring language `LOR` with parameters.
-]
-
-#remark[
-  Stated honestly: since `LOR` *contains* the ring function symbols, these graphs are atomic formulas and the lemmas carry no mathematical content. Their value is as an API stress test — building explicit bounded formulas and verifying realization through several layers of Mathlib's model-theory machinery (`Sum`-variable management, `CompatibleRing` transfer) — which is the same plumbing used by the elementarity transfers elsewhere in the development. The contrast case is real: in the pure order structure $(RR, <)$ addition is not definable, so the choice of language is load-bearing.
-]
-
 == Elementarity-preserving composition
 
 #theorem[
@@ -123,16 +141,6 @@ Together with the lower bound for infinite types, this supports the concrete bas
   Unlike the relativized version, this cannot be obtained from Mathlib's Tarski–Vaught test (pulling realization back through `DirectLimit.of` for arbitrary formulas is precisely what is being proved). The proof is a direct induction on `BoundedFormula`; in the `all` case, a direct-limit witness is pulled down to a common level via directedness and `DirectLimit.of_f`, while the universally quantified hypothesis is pushed up through the elementary transition embeddings. Mathlib's `DirectLimit` file currently has no elementarity results at all; this theorem is the form Mathlib should receive.
 ]
 
-== What the top-level chain clauses witness
-
-#proposition[
-  The `elementary_chain` field of `icahElementary` is witnessed by `constElemChain S`, where $S prec RR$ has cardinality $aleph_1$. The corresponding field of `icahTheorem` is witnessed by `mkConstantSC R.toSubfieldStratum`, where $R$ is one intermediate-size real-closed subfield (`RCSubfieldStratum`). Both chains use identity successor maps.
-]
-
-#remark[
-  This is a deliberately literal existence result, not a construction of a strictly increasing hierarchy. The theorems above remain substantive and apply to arbitrary $NN$-indexed elementary chains. Separately, `exists_cofinal_rc_family` below constructs a nonconstant monotone family covering $RR$, but its inclusions are not proved elementary. No theorem in the current development combines cofinality, nonconstancy, and elementarity in one family.
-]
-
 == Cardinality of the direct limit: identity, closure, and sharpness
 
 An earlier draft stated `directLimit_card`: *if* every level has cardinality below the continuum *and* the supremum of the level cardinalities is the continuum, *then* the direct limit has cardinality continuum. Those hypotheses are jointly unsatisfiable in ZFC — König's theorem gives $"cof"(c) > aleph_0$, so a countable supremum of cardinals $< c$ stays $< c$ — making the theorem true and empty. It has been deleted and replaced by three non-vacuous results.
@@ -151,24 +159,20 @@ The proof has two halves. The upper bound exhibits the direct limit as a quotien
   `cofinal_family_length_lower_bound` (ZFC-pure; sharpness, lower bound): any family ${S_i}_(i in iota)$ of subsets of $RR$ with $\#S_i < c$ for all $i$ and $union.big_i S_i = RR$ satisfies $\#iota >= "cof"(c)$.
 ]
 
+== Cofinal elementary and real-closed families
+
 #theorem[
-  `exists_cofinal_rc_family_cof_length` (under `NotCH`; sharpness, upper bound): there is a monotone family of intermediate-size real-closed subfields of $RR$, indexed by the ordinal $("cof"(c))."ord"$, covering all of $RR$.
+  `exists_cofinal_elem_family` (under `NotCH`): there is a monotone, `𝔠.ord`-indexed family of elementary substructures of $RR$, each of intermediate cardinality, covering $RR$. Every inclusion is elementary by `elementaryInclusion`. Compressing along a fundamental sequence yields a covering family of length exactly $"cof"(c)$ (`exists_cofinal_elem_family_cof_length`).
+]
+
+#theorem[
+  `exists_cofinal_rc_family` and `exists_cofinal_rc_family_cof_length` (under `NotCH`): the same cardinal picture for *named* real-closed subfields (relative algebraic closures). Under `RCFModelComplete`, the inclusions of that family are elementary (`exists_cofinal_rc_family_elementary`, via `nestedRCEmbedding`).
 ]
 
 #remark[
-  Together, the last two results say: among covering families whose members are subsets of $RR$ of size $< c$, the minimum possible index cardinal is $"cof"(c)$; under `NotCH`, that minimum is attained by a monotone family of intermediate-size real-closed subfields. The upper bound composes the `𝔠.ord`-indexed family below with a fundamental sequence (`Ordinal.exists_isFundamentalSeq`). This is not an optimality theorem for elementary-substructure families, because elementarity of the constructed cofinal family is not proved.
-]
-
-== Limit size via the cofinal family
-
-#theorem[
-  `exists_cofinal_rc_family` and `cofinal_family_limit_size` (under `NotCH`): there is a monotone, `𝔠.ord`-indexed family of real-closed subfields of $RR$, each of intermediate cardinality, whose union is all of $RR$ and hence has cardinality $c$.
-]
-
-#remark[
-  The shift from an $NN$-index to an uncountable-cofinality index is forced by König's theorem, as quantified precisely by the sharpness results above. This corrected formulation is what `ICAHStatement` asserts for the limit-size clause.
+  Together with the lower bound, these results say: among covering families whose members are subsets of $RR$ of size $< c$, the minimum possible index cardinal is $"cof"(c)$; under `NotCH`, that minimum is attained both by elementary substrata and by named real-closed subfields. The $NN$-indexed chain cannot exhaust $RR$ (König); the cofinal families can.
 ]
 
 #contribution[
-  For the paper, `exists_elementary_substratum`, `tarskiVaughtDirectLimit`, `directLimit_card_eq_iSup`, the $"cof"(c)$ sharpness pair, and `exists_rc_subfield` are the strongest fully proved results to foreground. Each is independent of the grand interpretation of ICAH, and all but the `NotCH`-consuming ones are ZFC-pure — which is precisely their selling point as Mathlib upstreaming candidates.
+  For the paper, `exists_elementary_substratum`, `elementaryInclusion`, `directed_iSup_isElementary`, `strictElemChain`, `exists_cofinal_elem_family`, `ofLevelElem`, `directLimit_card_eq_iSup`, the $"cof"(c)$ sharpness pair, and `exists_rc_subfield` are the strongest fully proved results to foreground. Each is independent of any grand interpretation of a named hypothesis, and all but the `NotCH`-consuming ones are ZFC-pure — which is precisely their selling point as Mathlib upstreaming candidates.
 ]

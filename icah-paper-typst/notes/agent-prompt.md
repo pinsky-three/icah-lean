@@ -11,15 +11,15 @@ Goal: produce a conservative, mathematically credible formalization paper. Do no
 
 Core thesis:
 
-> The ICAH Lean development decomposes an intermediate-cardinality continuum-stratification hypothesis into formal objects (`Stratum`, `SizeAwareField`, `SubfieldStratum`, `ElemChain`, `DirectLim`), proves several nontrivial components, and exposes the remaining dependencies as a precise Mathlib roadmap.
+> The Lean development decomposes an intermediate-cardinality continuum-stratification into formal objects (`Stratum`, `SizeAwareField`, `SubfieldStratum`, `ElemChain`, `DirectLim`), proves the elementary picture under `¬CH`, and exposes Pillar B's remaining dependency as a precise Mathlib roadmap.
 
-Headline theorem:
+Headline theorems:
 
-> `directLimit_card_eq_iSup`: when the supremum of the level cardinalities is infinite, the cardinality of a countable direct limit equals that supremum; `directLimit_card_lt_continuum` then shows that countable chains below the continuum remain below it.
+> Under `¬CH`: a strictly increasing ℕ-chain of elementary substrata (`strictElemChain`) and a cofinal elementary family of length `cf(𝔠)` (`exists_cofinal_elem_family_cof_length`). Independently: `ofLevelElem` (ambient-free chain theorem) and `directLimit_card_eq_iSup`.
 
 Required boundary statement:
 
-> The elementary-chain fields of `icahElementary` and `icahTheorem` are witnessed by constant chains. The separately constructed cofinal monotone family of real-closed subfields is nonconstant but is not proved elementary. The `cf(𝔠)` optimality statement concerns covering subsets and the real-closed-subfield upper bound, not elementary strata.
+> Pillar A needs only `NotCH`. Pillar B is the conditional algebraic pillar: named real-closed subfields with native `IsRealClosed` instances; their inclusions are elementary only given `RCFModelComplete`. Elementary substrata model `Th(ℝ)` (first-order RCF); native `IsRealClosed` transfer is not formalized. Post the minimized RCF statement on Zulip before claiming it is the unique Mathlib gap.
 
 Writing constraints:
 
@@ -29,13 +29,5 @@ Writing constraints:
 - Every claim about CH, real closed fields, p-adic fields, or Mathlib must cite a source.
 - Treat `NotCH` as an explicit external assumption, not as a defect.
 - Keep p-adic and valued-field analogies in future work.
-
-Next concrete task:
-
-Expand `sections/04-proved-results.typ` into theorem-by-theorem subsections. For each theorem, include:
-
-- Lean declaration name,
-- mathematical statement,
-- proof idea,
-- dependency status,
-- why it matters for the paper.
+- Do not restore constant-chain witnesses as the top-level story.
+- Prefer the name `LRing` for `Language.ring`; `LOR` is a compatibility alias.
