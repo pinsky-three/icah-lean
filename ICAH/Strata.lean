@@ -4,7 +4,7 @@ import ICAH.SizeAwareField
 
 namespace ICAH
 
-open Cardinal
+open Cardinal Set
 
 /-!
 ## Definability strata `R[≤ n]`
@@ -60,6 +60,25 @@ lower bound (`cofinal_family_length_lower_bound`). -/
 lemma aleph0_lt_cof_ord_continuum : aleph0 < continuum.ord.cof := by
   have h := Cardinal.lt_cof_ord_power (le_refl aleph0) Cardinal.one_lt_two
   rwa [Cardinal.two_power_aleph0] at h
+
+/-- A set of reals of size strictly below the continuum cannot be all of `ℝ`. -/
+lemma exists_real_not_mem (S : Set ℝ) (hS : #S < continuum) : ∃ x : ℝ, x ∉ S := by
+  by_contra hx
+  push Not at hx
+  have : S = Set.univ := Set.eq_univ_of_forall hx
+  rw [this, Cardinal.mk_univ, Cardinal.mk_real] at hS
+  exact lt_irrefl _ hS
+
+/-- Adding one point does not change the cardinality of an `ℵ₁`-sized set. -/
+lemma mk_union_singleton_aleph1 {S : Set ℝ} (hS : #S = aleph 1) (x : ℝ) :
+    #(S ∪ {x} : Set ℝ) = aleph 1 := by
+  apply le_antisymm
+  · calc #(S ∪ {x} : Set ℝ)
+        ≤ #S + #({x} : Set ℝ) := Cardinal.mk_union_le S {x}
+      _ = aleph 1 + 1 := by rw [hS, Cardinal.mk_singleton]
+      _ = aleph 1 := Cardinal.add_one_eq aleph0_lt_aleph_one.le
+  · have : #S ≤ #(S ∪ {x} : Set ℝ) := Cardinal.mk_le_mk_of_subset Set.subset_union_left
+    rwa [hS] at this
 
 /-! ## Synthetic example
 

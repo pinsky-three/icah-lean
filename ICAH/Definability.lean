@@ -31,10 +31,16 @@ open FirstOrder FirstOrder.Language FirstOrder.Ring Set
 
 /-! ### Language -/
 
-/-- The first-order language of rings used throughout ICAH.  The historical
-name `LOR` is kept for compatibility with the existing development; despite
-the mnemonic, this is `Language.ring`, with no order symbol. -/
-abbrev LOR : Language := Language.ring
+/-- The first-order language of rings used throughout the development:
+    `Language.ring`, with function symbols `+`, `*`, `-`, `0`, `1` and *no*
+    order symbol.  In a real-closed field the order is ring-definable
+    (`x ≤ y` iff `y - x` is a square), so this language is the correct one
+    for the intended models. -/
+abbrev LRing : Language := Language.ring
+
+/-- Compatibility alias for `LRing`.  Historical name kept so existing
+    declarations continue to type-check; prefer `LRing` in new code. -/
+abbrev LOR : Language := LRing
 
 /-! ### Structure instance for ℝ
 

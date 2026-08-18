@@ -324,4 +324,24 @@ noncomputable def RCFModelComplete.emb (hMC : RCFModelComplete)
     exact R.h_rc
   exact Classical.choose (hMC K hK)
 
+/-- Nested real-closed subfields of `ℝ` form an elementary pair, given the
+    specialized RCF elementarity hypothesis: both inclusions into `ℝ` are
+    elementary, so satisfaction in each reduces to satisfaction in `ℝ`. -/
+noncomputable def nestedRCEmbedding (hMC : RCFModelComplete)
+    (K L : Subfield ℝ) (hK : IsRealClosed K) (hL : IsRealClosed L)
+    (hKL : K ≤ L) : K ↪ₑ[LOR] L where
+  toFun := Subfield.inclusion hKL
+  map_formula' := fun {n} φ x => by
+    obtain ⟨eK, heK⟩ := hMC K hK
+    obtain ⟨eL, heL⟩ := hMC L hL
+    have hφK := eK.map_formula φ x
+    have hφL := eL.map_formula φ (Subfield.inclusion hKL ∘ x)
+    have hfun : eL ∘ Subfield.inclusion hKL ∘ x = eK ∘ x := by
+      funext k
+      simp only [Function.comp_apply, heL, heK]
+      rfl
+    change φ.Realize (Subfield.inclusion hKL ∘ x) ↔ φ.Realize x
+    rw [← hφL, hfun]
+    exact hφK
+
 end ICAH

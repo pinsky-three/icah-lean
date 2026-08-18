@@ -1,6 +1,7 @@
 import Mathlib
 import ICAH.Axioms
 import ICAH.FieldOnStratum
+import ICAH.ElementaryStrata
 
 namespace ICAH
 
@@ -40,12 +41,44 @@ The `𝔠.ord` index length above is not optimal.  The sharp statement is:
 
 Together: the least index cardinal of a covering family of subsets of ℝ,
 each of size `< 𝔠`, is exactly `cf(𝔠)`, and the upper bound can be attained
-by real-closed subfields.  No elementarity assertion is made for this family.
+by real-closed subfields.
+
+A parallel *elementary* family is constructed in this file by the same
+enumeration, replacing relative algebraic closures with downward
+Löwenheim–Skolem at each stage.  Nesting (`elementaryInclusion`) makes every
+inclusion elementary, so the family is a nonconstant cofinal elementary
+hierarchy of intermediate strata.  The same `cf(𝔠)`-length compression
+applies.
 -/
 
 /-- The index type for the cofinal family: the order type of the ordinal `𝔠.ord`
     (universe-pinned to `Type 0` so that it can be enumerated against `ℝ`). -/
 abbrev ContinuumIdx : Type := continuum.{0}.ord.ToType
+
+/-- Initial segments of `𝔠.ord` have cardinality strictly below `𝔠`. -/
+lemma mk_Iio_lt_continuum (i : ContinuumIdx) : #(Iio i) < continuum := by
+  have h1 : Ordinal.typein (α := ContinuumIdx) (· < ·) i < continuum.ord := by
+    have h := Ordinal.typein_lt_type (α := ContinuumIdx) (· < ·) i
+    rwa [show Ordinal.type (α := ContinuumIdx) (· < ·) = continuum.ord from
+      Ordinal.type_toType _] at h
+  have h2 := Cardinal.lt_ord.mp h1
+  rwa [Ordinal.card_typein] at h2
+
+/-- Closed initial segments of `𝔠.ord` likewise have size `< 𝔠`. -/
+lemma mk_Iic_lt_continuum (i : ContinuumIdx) : #(Iic i) < continuum := by
+  have : Iic i = insert i (Iio i) := by
+    ext k
+    simp [Iic, Iio, le_iff_lt_or_eq, or_comm]
+  rw [this]
+  calc #(insert i (Iio i) : Set ContinuumIdx)
+      ≤ #(Iio i) + 1 := Cardinal.mk_insert_le
+    _ < continuum :=
+        Cardinal.add_lt_of_lt aleph0_le_continuum (mk_Iio_lt_continuum i)
+          (one_lt_aleph0.trans_le aleph0_le_continuum)
+
+lemma Iic_subset_Iio_of_lt {j i : ContinuumIdx} (h : j < i) :
+    Iic j ⊆ Iio i :=
+  fun _ hk => lt_of_le_of_lt hk h
 
 /-- The cofinal family witnessing the honest form of M6 (under `NotCH`). -/
 theorem exists_cofinal_rc_family (h : NotCH) :
@@ -83,13 +116,7 @@ theorem exists_cofinal_rc_family (h : NotCH) :
         _ = #W := hW.symm
         _ ≤ _ := Cardinal.mk_le_mk_of_subset hsub
     · -- #(K i) < 𝔠: the generating set has size < 𝔠.
-      have hIio : #(Iio i) < continuum := by
-        have h1 : Ordinal.typein (α := ContinuumIdx) (· < ·) i < continuum.ord := by
-          have h := Ordinal.typein_lt_type (α := ContinuumIdx) (· < ·) i
-          rwa [show Ordinal.type (α := ContinuumIdx) (· < ·) = continuum.ord from
-            Ordinal.type_toType _] at h
-        have h2 := Cardinal.lt_ord.mp h1
-        rwa [Ordinal.card_typein] at h2
+      have hIio : #(Iio i) < continuum := mk_Iio_lt_continuum i
       have hseg : #(e '' Iio i) < continuum :=
         lt_of_le_of_lt Cardinal.mk_image_le hIio
       have hgen : #(W ∪ e '' Iio i : Set ℝ) < continuum :=
@@ -186,5 +213,214 @@ theorem exists_cofinal_rc_family_cof_length (h : NotCH) :
   have h2 := Ordinal.ToType.mk.monotone hle
   rw [OrderIso.apply_symm_apply] at h2
   simpa only [g, OrderIso.symm_apply_apply] using h2
+
+/-! ### Elementary cofinal family (Pillar A) -/
+
+open FirstOrder FirstOrder.Language
+
+/-- Stage data for the transfinite DLS construction. -/
+structure ElemStage (i : ContinuumIdx) where
+  S : LOR.ElementarySubstructure ℝ
+  h0 : aleph 1 ≤ #S
+  hsize : #S ≤ max (aleph 1) (#(Iic i))
+
+/-- Seed set at stage `i`: a fixed `ℵ₁`-sized witness, the `i`-th real, and
+    the union of all previous stages. -/
+def elemSeed (e : ContinuumIdx ≃ ℝ) (W : Set ℝ) (i : ContinuumIdx)
+    (rec : ∀ j : ContinuumIdx, j < i → ElemStage j) : Set ℝ :=
+  W ∪ ({e i} : Set ℝ) ∪
+    ⋃ j : {j : ContinuumIdx // j < i}, ((rec j.1 j.2).S : Set ℝ)
+
+lemma elemSeed_contains_prev (e : ContinuumIdx ≃ ℝ) (W : Set ℝ)
+    {i j : ContinuumIdx} (hji : j < i)
+    (rec : ∀ k : ContinuumIdx, k < i → ElemStage k) :
+    ((rec j hji).S : Set ℝ) ⊆ elemSeed e W i rec :=
+  fun _ hx => Or.inr (Set.mem_iUnion.mpr ⟨⟨j, hji⟩, hx⟩)
+
+lemma elemPrev_card_le
+    {i : ContinuumIdx} (rec : ∀ j : ContinuumIdx, j < i → ElemStage j) :
+    #(⋃ j : {j : ContinuumIdx // j < i}, ((rec j.1 j.2).S : Set ℝ)) ≤
+      max (aleph 1) (#(Iio i)) := by
+  set prev := ⋃ j : {j : ContinuumIdx // j < i}, ((rec j.1 j.2).S : Set ℝ)
+  cases isEmpty_or_nonempty {j : ContinuumIdx // j < i} with
+  | inl hempty =>
+    have : prev = ∅ := iUnion_of_empty _
+    simp [this]
+  | inr hne =>
+    haveI := hne
+    have hsup : (⨆ j : {j : ContinuumIdx // j < i}, #(rec j.1 j.2).S) ≤
+        max (aleph 1) (#(Iio i)) := by
+      apply ciSup_le
+      intro j
+      calc #(rec j.1 j.2).S
+          ≤ max (aleph 1) (#(Iic j.1)) := (rec j.1 j.2).hsize
+        _ ≤ max (aleph 1) (#(Iio i)) :=
+            max_le_max le_rfl
+              (Cardinal.mk_le_mk_of_subset (Iic_subset_Iio_of_lt j.2))
+    calc #prev
+        ≤ #{j : ContinuumIdx // j < i} *
+            ⨆ j : {j : ContinuumIdx // j < i}, #(rec j.1 j.2).S :=
+          Cardinal.mk_iUnion_le _
+      _ ≤ #(Iio i) * max (aleph 1) (#(Iio i)) :=
+          mul_le_mul' le_rfl hsup
+      _ ≤ max (aleph 1) (#(Iio i)) * max (aleph 1) (#(Iio i)) :=
+          mul_le_mul' (le_max_right _ _) le_rfl
+      _ = max (aleph 1) (#(Iio i)) :=
+          Cardinal.mul_eq_self (le_max_of_le_left aleph0_lt_aleph_one.le)
+
+lemma elemSeed_card_le (e : ContinuumIdx ≃ ℝ) {W : Set ℝ} (hW : #W = aleph 1)
+    {i : ContinuumIdx} (rec : ∀ j : ContinuumIdx, j < i → ElemStage j) :
+    #(elemSeed e W i rec) ≤ max (aleph 1) (#(Iic i)) := by
+  have hW1 : #(W ∪ {e i} : Set ℝ) = aleph 1 := mk_union_singleton_aleph1 hW _
+  have hprev := elemPrev_card_le rec
+  calc #(elemSeed e W i rec)
+      ≤ #(W ∪ {e i} : Set ℝ) +
+          #(⋃ j : {j : ContinuumIdx // j < i}, ((rec j.1 j.2).S : Set ℝ)) :=
+        Cardinal.mk_union_le _ _
+    _ = aleph 1 +
+          #(⋃ j : {j : ContinuumIdx // j < i}, ((rec j.1 j.2).S : Set ℝ)) := by
+        rw [hW1]
+    _ ≤ aleph 1 + max (aleph 1) (#(Iio i)) := add_le_add_right hprev _
+    _ = max (aleph 1) (#(Iio i)) := by
+        rw [add_comm, Cardinal.add_eq_left
+          (le_max_of_le_left aleph0_lt_aleph_one.le) (le_max_left _ _)]
+    _ ≤ max (aleph 1) (#(Iic i)) :=
+        max_le_max le_rfl
+          (Cardinal.mk_le_mk_of_subset (Iio_subset_Iic (le_refl i)))
+
+lemma elemSeedκ_le_continuum (_h : NotCH) (e : ContinuumIdx ≃ ℝ)
+    {W : Set ℝ} (hW : #W = aleph 1) {i : ContinuumIdx}
+    (rec : ∀ j : ContinuumIdx, j < i → ElemStage j) :
+    max (aleph 1) #(elemSeed e W i rec) ≤ continuum :=
+  max_le aleph_one_le_continuum
+    ((elemSeed_card_le e hW rec).trans
+      (max_le aleph_one_le_continuum (mk_Iic_lt_continuum i).le))
+
+/-- The DLS existence term used at stage `i`.  Named so `choose` is shared. -/
+noncomputable def elemStageHex (h : NotCH) (e : ContinuumIdx ≃ ℝ)
+    (W : Set ℝ) (hW : #W = aleph 1) (i : ContinuumIdx)
+    (rec : ∀ j : ContinuumIdx, j < i → ElemStage j) :
+    ∃ S : LOR.ElementarySubstructure ℝ,
+      elemSeed e W i rec ⊆ S ∧ #S = max (aleph 1) #(elemSeed e W i rec) :=
+  exists_elementary_substratum_extending (elemSeed e W i rec)
+    (le_max_right _ _)
+    (le_max_of_le_left aleph0_lt_aleph_one.le)
+    (elemSeedκ_le_continuum h e hW rec)
+
+noncomputable def elemStageStep (h : NotCH) (e : ContinuumIdx ≃ ℝ)
+    (W : Set ℝ) (hW : #W = aleph 1) (i : ContinuumIdx)
+    (rec : ∀ j : ContinuumIdx, j < i → ElemStage j) : ElemStage i where
+  S := (elemStageHex h e W hW i rec).choose
+  h0 := by
+    rw [(elemStageHex h e W hW i rec).choose_spec.2]
+    exact le_max_left _ _
+  hsize := by
+    rw [(elemStageHex h e W hW i rec).choose_spec.2]
+    exact max_le (le_max_left _ _) (elemSeed_card_le e hW rec)
+
+lemma elemStageStep_seed_sub (h : NotCH) (e : ContinuumIdx ≃ ℝ)
+    (W : Set ℝ) (hW : #W = aleph 1) (i : ContinuumIdx)
+    (rec : ∀ j : ContinuumIdx, j < i → ElemStage j) :
+    elemSeed e W i rec ⊆ (elemStageStep h e W hW i rec).S :=
+  (elemStageHex h e W hW i rec).choose_spec.1
+
+noncomputable def elemStageAt (h : NotCH) (e : ContinuumIdx ≃ ℝ)
+    (W : Set ℝ) (hW : #W = aleph 1) :
+    ∀ i : ContinuumIdx, ElemStage i :=
+  WellFounded.fix wellFounded_lt fun i rec =>
+    elemStageStep h e W hW i rec
+
+lemma elemStageAt_eq (h : NotCH) (e : ContinuumIdx ≃ ℝ)
+    (W : Set ℝ) (hW : #W = aleph 1) (i : ContinuumIdx) :
+    elemStageAt h e W hW i =
+      elemStageStep h e W hW i fun j _hj => elemStageAt h e W hW j :=
+  WellFounded.fix_eq _ _ _
+
+lemma elemStageAt_mono (h : NotCH) (e : ContinuumIdx ≃ ℝ)
+    (W : Set ℝ) (hW : #W = aleph 1) {j i : ContinuumIdx} (hji : j ≤ i) :
+    (elemStageAt h e W hW j).S ≤ (elemStageAt h e W hW i).S := by
+  rcases lt_or_eq_of_le hji with hlt | rfl
+  · rw [elemStageAt_eq h e W hW i]
+    exact (elemSeed_contains_prev e W hlt _).trans
+      (elemStageStep_seed_sub h e W hW i fun k hk => elemStageAt h e W hW k)
+  · exact le_rfl
+
+lemma elemStageAt_mem_self (h : NotCH) (e : ContinuumIdx ≃ ℝ)
+    (W : Set ℝ) (hW : #W = aleph 1) (i : ContinuumIdx) :
+    e i ∈ (elemStageAt h e W hW i).S := by
+  rw [elemStageAt_eq h e W hW i]
+  exact (elemStageStep_seed_sub h e W hW i fun k hk => elemStageAt h e W hW k)
+    (Or.inl (Or.inr (Set.mem_singleton _)))
+
+/-- **Elementary cofinal family**: a `𝔠.ord`-indexed monotone family of
+    elementary substructures of `ℝ`, each of intermediate size, covering `ℝ`.
+    Every inclusion is elementary by `elementaryInclusion`. -/
+theorem exists_cofinal_elem_family (h : NotCH) :
+    ∃ S : ContinuumIdx → LOR.ElementarySubstructure ℝ,
+      Monotone S ∧
+      (∀ i, aleph0 < #(S i) ∧ #(S i) < continuum) ∧
+      (∀ x : ℝ, ∃ i, x ∈ S i) := by
+  classical
+  have hmk : #ContinuumIdx = #ℝ := by
+    rw [Cardinal.mk_real]
+    exact (Cardinal.mk_toType _).trans (Cardinal.card_ord _)
+  obtain ⟨e⟩ := Cardinal.eq.mp hmk
+  have h1ℝ : aleph 1 ≤ #ℝ := by rw [Cardinal.mk_real]; exact aleph_one_le_continuum
+  obtain ⟨W, hW⟩ := Cardinal.le_mk_iff_exists_set.mp h1ℝ
+  refine ⟨fun i => (elemStageAt h e W hW i).S, ?_, ?_, ?_⟩
+  · intro i j hij
+    exact elemStageAt_mono h e W hW hij
+  · intro i
+    have h0 : aleph 1 ≤ #(elemStageAt h e W hW i).S :=
+      (elemStageAt h e W hW i).h0
+    have hlt : #(elemStageAt h e W hW i).S < continuum :=
+      lt_of_le_of_lt (elemStageAt h e W hW i).hsize
+        (max_lt (aleph_one_lt_continuum_of_notCH h) (mk_Iic_lt_continuum i))
+    exact ⟨aleph0_lt_aleph_one.trans_le h0, hlt⟩
+  · intro x
+    haveI : NoMaxOrder ContinuumIdx := Cardinal.noMaxOrder aleph0_le_continuum
+    obtain ⟨i, hi⟩ := exists_gt (e.symm x)
+    refine ⟨i, elemStageAt_mono h e W hW hi.le
+      (by
+        have : e (e.symm x) ∈ (elemStageAt h e W hW (e.symm x)).S :=
+          elemStageAt_mem_self h e W hW _
+        rwa [e.apply_symm_apply] at this)⟩
+
+/-- Optimal-length elementary covering family: compose with a fundamental
+    sequence to obtain length `cf(𝔠)`. -/
+theorem exists_cofinal_elem_family_cof_length (h : NotCH) :
+    ∃ S : CofContinuumIdx → LOR.ElementarySubstructure ℝ,
+      Monotone S ∧
+      (∀ i, aleph0 < #(S i) ∧ #(S i) < continuum) ∧
+      (∀ x : ℝ, ∃ i, x ∈ S i) := by
+  obtain ⟨S, hmono, hbounds, hcov⟩ := exists_cofinal_elem_family h
+  obtain ⟨f, hf⟩ := Ordinal.exists_isFundamentalSeq (o := continuum.{0}.ord) rfl
+  let g : CofContinuumIdx → ContinuumIdx := fun i =>
+    Ordinal.ToType.mk (f (Ordinal.ToType.mk.symm i))
+  have hg_mono : Monotone g := fun i j hij =>
+    Ordinal.ToType.mk.monotone
+      (hf.strictMono.monotone (Ordinal.ToType.mk.symm.monotone hij))
+  refine ⟨S ∘ g, hmono.comp hg_mono, fun i => hbounds _, ?_⟩
+  intro x
+  obtain ⟨j, hj⟩ := hcov x
+  obtain ⟨_, ⟨i, rfl⟩, hle⟩ := hf.isCofinal_range (Ordinal.ToType.mk.symm j)
+  refine ⟨Ordinal.ToType.mk i, hmono ?_ hj⟩
+  have h2 := Ordinal.ToType.mk.monotone hle
+  rw [OrderIso.apply_symm_apply] at h2
+  simpa only [g, OrderIso.symm_apply_apply] using h2
+
+/-- Under `RCFModelComplete`, the real-closed cofinal family has elementary
+    inclusions: each pair `K i ≤ K j` is an elementary pair by nesting. -/
+theorem exists_cofinal_rc_family_elementary (h : NotCH) (hMC : RCFModelComplete) :
+    ∃ K : ContinuumIdx → Subfield ℝ,
+      Monotone K ∧
+      (∀ i, IsRealClosed (K i)) ∧
+      (∀ i j, i ≤ j → Nonempty (K i ↪ₑ[LOR] K j)) ∧
+      (∀ i, aleph0 < #(K i) ∧ #(K i) < continuum) ∧
+      (∀ x : ℝ, ∃ i, x ∈ K i) := by
+  obtain ⟨K, hmono, hrc, hbounds, hcov⟩ := exists_cofinal_rc_family h
+  refine ⟨K, hmono, hrc, ?_, hbounds, hcov⟩
+  intro i j hij
+  exact ⟨nestedRCEmbedding hMC (K i) (K j) (hrc i) (hrc j) (hmono hij)⟩
 
 end ICAH
