@@ -80,5 +80,5 @@ Recommended framing:
 
 1. Run `make build`, `make sorry-count`, and `make axiom-count` in the Lean repository.
 2. Run `make build` here with Typst 0.14.2.
-3. Confirm that the manuscript does not advertise `v1.0.0` as the current artifact.
+3. Confirm that the manuscript cites release tag `v1.1.0`.
 4. Confirm that the top-level chain witnesses are the strictly increasing `strictElemChain`, and that the elementary cofinal family is stated.

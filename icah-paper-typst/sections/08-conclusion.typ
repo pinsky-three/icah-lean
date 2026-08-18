@@ -14,7 +14,7 @@ The development is pinned and machine-checked:
 
 - *Toolchain*: `leanprover/lean4:v4.31.0-rc2`.
 - *Mathlib revision*: `a810615ff479602ad66b5403d179bfa805314a50` (June 2026), locked in `lake-manifest.json`.
-- *Release*: this manuscript corresponds to the post-referee Lean revision on the elementary-strata branch; a `v1.1.0` tag should be cut after the Zulip dedup check, not the earlier `v1.0.0` artifact.
+- *Release*: repository tag `v1.1.0` at @pinsky_icah_lean; this tag is the artifact corresponding to the present paper. The earlier `v1.0.0` tag is the pre-chain-strengthening artifact and should not be cited for the results of Sections 1 and 4.
 - *Paper compiler*: Typst 0.14.2, pinned and checked by the paper Makefile and CI.
 - *Continuous integration*: `lake build` (including the guarded audits), zero-`sorry` and zero-project-`axiom` checks, followed by a pinned Typst build of the manuscript.
 - *Statistics*: 11 Lean modules under `ICAH/`, circa 2,200 lines of Lean, 0 project axioms, 0 sorries; both main theorems audit to `[propext, Classical.choice, Quot.sound]`.
@@ -51,8 +51,8 @@ The development is pinned and machine-checked:
   [`exists_cofinal_rc_family_cof_length`], [$"cof"(c)$-length real-closed covering family], [`NotCH`],
   [`exists_cofinal_rc_family_elementary`], [RC family with elementary inclusions], [`NotCH`, `RCFModelComplete`],
   [`cofinal_family_limit_size`], [M6 limit-size clause], [`NotCH`],
-  [`ICAHElementary` / `icahElementary`], [*Theorem 1* (Pillar A)], [`NotCH`],
-  [`ICAHStatement` / `icahTheorem`], [*Theorem 2* (Pillar B)], [`NotCH`, `RCFModelComplete`],
+  [`ICAHElementary` / `icahElementary` / `elementaryStrata`], [*Theorem 1* (Pillar A)], [`NotCH`],
+  [`ICAHStatement` / `icahTheorem` / `algebraicRealization`], [*Theorem 2* (Pillar B)], [`NotCH`, `RCFModelComplete`],
 )
 
 == Engagement plan

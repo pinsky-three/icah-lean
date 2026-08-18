@@ -169,6 +169,10 @@ The proof has two halves. The upper bound exhibits the direct limit as a quotien
   `exists_cofinal_rc_family` and `exists_cofinal_rc_family_cof_length` (under `NotCH`): the same cardinal picture for *named* real-closed subfields (relative algebraic closures). Under `RCFModelComplete`, the inclusions of that family are elementary (`exists_cofinal_rc_family_elementary`, via `nestedRCEmbedding`).
 ]
 
+#theorem[
+  `cofinal_family_limit_size` (under `NotCH`): the union of the `𝔠.ord`-indexed real-closed family has cardinality $c$. This is the packaged form of the M6 limit-size clause: every level stays strictly below $c$, while the union is all of $RR$.
+]
+
 #remark[
   Together with the lower bound, these results say: among covering families whose members are subsets of $RR$ of size $< c$, the minimum possible index cardinal is $"cof"(c)$; under `NotCH`, that minimum is attained both by elementary substrata and by named real-closed subfields. The $NN$-indexed chain cannot exhaust $RR$ (König); the cofinal families can.
 ]

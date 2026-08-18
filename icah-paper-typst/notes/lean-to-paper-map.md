@@ -32,6 +32,7 @@
 | `exists_cofinal_rc_family` | Honest M6: cofinal RC family | Proved | 𝔠.ord-indexed; avoids König obstruction |
 | `exists_cofinal_rc_family_elementary` | RC family with elementary inclusions | Proved | Needs `RCFModelComplete` + nesting |
 | `cofinal_family_length_lower_bound` / `exists_cofinal_rc_family_cof_length` | Exact covering threshold | Proved | Lower bound for arbitrary small subsets; RC upper bound |
-| `cofinal_family_limit_size` | Union has cardinality 𝔠 | Proved | Limit-size clause of `ICAHStatement` |
+| `cofinal_family_limit_size` | Union of the RC family has cardinality 𝔠 | Proved | Packaged M6 limit-size clause |
 | `ICAHStatement` | Top-level Prop-valued statement | Definition | M1/M3/M5/M6 plus elementary RC family |
-| `icahTheorem` | Assembly theorem | Proved | Hypotheses: `NotCH`, `RCFModelComplete`; RCF used only for the last clause |
+| `icahElementary` / `elementaryStrata` | Theorem 1 (Pillar A) | Proved | `elementaryStrata` is the descriptive alias |
+| `icahTheorem` / `algebraicRealization` | Theorem 2 (Pillar B) | Proved | `algebraicRealization` is the descriptive alias; `RCFModelComplete` used only for the last clause |

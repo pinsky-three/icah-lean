@@ -13,7 +13,7 @@ The project name "ICAH" is retained as a repository identifier. The mathematics 
 The development is organized as two pillars that realize the same informal picture at different levels of concreteness.
 
 #theorem[
-  *(Theorem 1 — Pillar A, semantic form; Lean: `icahElementary`.)*
+  *(Theorem 1 — Pillar A, semantic form; Lean: `icahElementary`, descriptive alias `elementaryStrata`.)*
   Assume $not "CH"$ (i.e. `NotCH`). Then, writing #LRing for the first-order ring language and "stratum" for an elementary substructure $S prec RR$ in #LRing:
 
   + *(band)* there exists a cardinal $kappa$ with $aleph_0 < kappa < 2^(aleph_0)$;
@@ -28,7 +28,7 @@ The development is organized as two pillars that realize the same informal pictu
 ]
 
 #theorem[
-  *(Theorem 2 — Pillar B, algebraic realization; Lean: `icahTheorem`.)*
+  *(Theorem 2 — Pillar B, algebraic realization; Lean: `icahTheorem`, descriptive alias `algebraicRealization`.)*
   Assume $not "CH"$ and additionally `RCFModelComplete` (compatibility name for the $RR$-specialized consequence that the inclusion of every real-closed subfield of $RR$ into $RR$ is elementary in the ring language; it follows from model completeness of RCF, a Mathlib gap). Then the clauses of `ICAHStatement` hold:
 
   + *(M1)* for every ordinal $n$ there is a stratum $R$ with index $n$ and $aleph_0 < \#R < 2^(aleph_0)$;

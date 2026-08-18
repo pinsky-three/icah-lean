@@ -5,10 +5,10 @@ type: software
 authors:
   - family-names: Malpartida
     given-names: Bregy
-version: 1.0.0
-date-released: 2026-08-03
+version: 1.1.0
+date-released: 2026-08-18
 repository-code: "https://github.com/pinsky-three/icah-lean"
-url: "https://github.com/pinsky-three/icah-lean/tree/v1.0.0"
+url: "https://github.com/pinsky-three/icah-lean/tree/v1.1.0"
 license:
   - MIT
   - CC-BY-4.0

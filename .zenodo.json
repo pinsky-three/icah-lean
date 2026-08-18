@@ -1,6 +1,6 @@
 {
-  "title": "icah-lean: Lean formalization of intermediate-cardinality strata and direct limits",
-  "description": "Lean 4 and Mathlib formalization accompanying the paper Intermediate-Cardinality Strata and Direct Limits in Lean: A Formalization Study around the Continuum. Dual-licensed: MIT for Lean sources, build configuration, and automation; CC BY 4.0 for the manuscript under icah-paper-typst/, the top-level README, and docs/.",
+  "title": "icah-lean: elementary strata of the continuum under not CH",
+  "description": "Lean 4 and Mathlib formalization accompanying the paper Elementary strata of the continuum under not CH: a Lean formalization study. Dual-licensed: MIT for Lean sources, build configuration, and automation; CC BY 4.0 for the manuscript under icah-paper-typst/, the top-level README, and docs/.",
   "creators": [
     {
       "name": "Malpartida, Bregy",
@@ -17,5 +17,5 @@
     "real closed fields",
     "continuum hypothesis"
   ],
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

@@ -458,4 +458,9 @@ theorem icahElementary (h : NotCH) : ICAHElementary where
       by rw [hS]; exact aleph_one_lt_continuum_of_notCH h,
       hxS (Set.mem_singleton x)⟩
 
+/-- Descriptive name of `icahElementary` for Mathlib-facing discussion.
+    The `icahElementary` identifier is retained for repository continuity. -/
+theorem elementaryStrata (h : NotCH) : ICAHElementary :=
+  icahElementary h
+
 end ICAH

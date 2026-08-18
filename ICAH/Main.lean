@@ -159,6 +159,12 @@ theorem icahTheorem (hCH : NotCH) (hMC : RCFModelComplete) : ICAHStatement where
   -- Under `RCFModelComplete`, the same RC family has elementary inclusions.
   elementary_rc_cofinal := exists_cofinal_rc_family_elementary hCH hMC
 
+/-- Descriptive name of `icahTheorem` for Mathlib-facing discussion.
+    The `icahTheorem` identifier is retained for repository continuity. -/
+theorem algebraicRealization (hCH : NotCH) (hMC : RCFModelComplete) :
+    ICAHStatement :=
+  icahTheorem hCH hMC
+
 /-! ### Axiom audits
 
 All flagship results depend only on the Lean kernel axioms.  `#guard_msgs`
@@ -175,6 +181,18 @@ info: 'ICAH.icahElementary' depends on axioms: [propext, Classical.choice, Quot.
 -/
 #guard_msgs in
 #print axioms icahElementary
+
+/--
+info: 'ICAH.elementaryStrata' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms elementaryStrata
+
+/--
+info: 'ICAH.algebraicRealization' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms algebraicRealization
 
 /-! #### Pillar A building blocks -/
 

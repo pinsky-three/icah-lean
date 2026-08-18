@@ -10,10 +10,9 @@ under ¬CH: a Lean formalization study*. The historical project name
 
 ## Publication release
 
-The manuscript corresponds to the post-referee Lean revision (strictly
-increasing elementary chains and a cofinal elementary family). A
-**v1.1.0** tag should be cut after the Zulip dedup check. The earlier
-**v1.0.0** artifact is superseded.
+The manuscript artifact is release **v1.1.0**. The earlier **v1.0.0**
+tag is the pre-chain-strengthening artifact and should not be cited for
+the strict-chain or elementary-cofinal-family results.
 
 Pinned toolchain:
 
