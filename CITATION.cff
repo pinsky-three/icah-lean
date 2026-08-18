@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this formalization, please cite the paper and software release below."
-title: "icah-lean: Lean formalization of intermediate-cardinality strata and direct limits"
+title: "icah-lean: elementary strata of the continuum under ¬CH"
 type: software
 authors:
   - family-names: Malpartida
@@ -23,6 +23,6 @@ preferred-citation:
   authors:
     - family-names: Malpartida
       given-names: Bregy
-  title: "Intermediate-Cardinality Strata and Direct Limits in Lean: A Formalization Study around the Continuum"
+  title: "Elementary strata of the continuum under ¬CH: a Lean formalization study"
   year: 2026
   license: CC-BY-4.0
