@@ -123,6 +123,16 @@ Together with the lower bound for infinite types, this supports the concrete bas
   Unlike the relativized version, this cannot be obtained from Mathlib's Tarski–Vaught test (pulling realization back through `DirectLimit.of` for arbitrary formulas is precisely what is being proved). The proof is a direct induction on `BoundedFormula`; in the `all` case, a direct-limit witness is pulled down to a common level via directedness and `DirectLimit.of_f`, while the universally quantified hypothesis is pushed up through the elementary transition embeddings. Mathlib's `DirectLimit` file currently has no elementarity results at all; this theorem is the form Mathlib should receive.
 ]
 
+== What the top-level chain clauses witness
+
+#proposition[
+  The `elementary_chain` field of `icahElementary` is witnessed by `constElemChain S`, where $S prec RR$ has cardinality $aleph_1$. The corresponding field of `icahTheorem` is witnessed by `mkConstantSC R.toSubfieldStratum`, where $R$ is one intermediate-size real-closed subfield (`RCSubfieldStratum`). Both chains use identity successor maps.
+]
+
+#remark[
+  This is a deliberately literal existence result, not a construction of a strictly increasing hierarchy. The theorems above remain substantive and apply to arbitrary $NN$-indexed elementary chains. Separately, `exists_cofinal_rc_family` below constructs a nonconstant monotone family covering $RR$, but its inclusions are not proved elementary. No theorem in the current development combines cofinality, nonconstancy, and elementarity in one family.
+]
+
 == Cardinality of the direct limit: identity, closure, and sharpness
 
 An earlier draft stated `directLimit_card`: *if* every level has cardinality below the continuum *and* the supremum of the level cardinalities is the continuum, *then* the direct limit has cardinality continuum. Those hypotheses are jointly unsatisfiable in ZFC — König's theorem gives $"cof"(c) > aleph_0$, so a countable supremum of cardinals $< c$ stays $< c$ — making the theorem true and empty. It has been deleted and replaced by three non-vacuous results.
@@ -146,7 +156,7 @@ The proof has two halves. The upper bound exhibits the direct limit as a quotien
 ]
 
 #remark[
-  Together, the last two results say: *the least length of an exhausting family of intermediate strata is exactly $"cof"(c)$* — a genuine sharpness statement in the language of cardinal invariants. The upper bound composes the `𝔠.ord`-indexed family below with a fundamental sequence (`Ordinal.exists_isFundamentalSeq`). The König obstruction that made the original formulation vacuous is thereby converted into the optimality half of a theorem.
+  Together, the last two results say: among covering families whose members are subsets of $RR$ of size $< c$, the minimum possible index cardinal is $"cof"(c)$; under `NotCH`, that minimum is attained by a monotone family of intermediate-size real-closed subfields. The upper bound composes the `𝔠.ord`-indexed family below with a fundamental sequence (`Ordinal.exists_isFundamentalSeq`). This is not an optimality theorem for elementary-substructure families, because elementarity of the constructed cofinal family is not proved.
 ]
 
 == Limit size via the cofinal family

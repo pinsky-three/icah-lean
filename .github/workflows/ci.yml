@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
 
 jobs:
@@ -46,3 +47,17 @@ jobs:
           count=$(grep -rn "^axiom " ICAH/ --include="*.lean" | wc -l | tr -d ' ')
           echo "project axiom count: $count"
           test "$count" = "0"
+
+      - name: Install pinned Typst
+        run: |
+          TYPST_VERSION="$(sed -n 's/^TYPST_VERSION := //p' icah-paper-typst/Makefile)"
+          TYPST_SHA256="$(sed -n 's/^TYPST_SHA256 := //p' icah-paper-typst/Makefile)"
+          archive="/tmp/typst-${TYPST_VERSION}.tar.xz"
+          curl -fL "https://github.com/typst/typst/releases/download/v${TYPST_VERSION}/typst-x86_64-unknown-linux-musl.tar.xz" -o "$archive"
+          echo "${TYPST_SHA256}  ${archive}" | sha256sum --check
+          mkdir -p /tmp/typst-bin
+          tar -xJf "$archive" -C /tmp/typst-bin --strip-components=1
+          echo "/tmp/typst-bin" >> "$GITHUB_PATH"
+
+      - name: Build paper
+        run: make -C icah-paper-typst build

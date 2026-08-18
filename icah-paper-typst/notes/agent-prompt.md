@@ -6,7 +6,7 @@ Goal: produce a conservative, mathematically credible formalization paper. Do no
 
 1. fully proved Lean declarations,
 2. external set-theoretic assumptions,
-3. named axioms representing Mathlib/API gaps,
+3. explicit theorem hypotheses representing Mathlib/API gaps,
 4. future work and analogies.
 
 Core thesis:
@@ -15,7 +15,11 @@ Core thesis:
 
 Headline theorem:
 
-> `directLimit_card`: under level cardinality bounds and supremum continuum, the direct limit of a countable elementary chain has cardinality continuum.
+> `directLimit_card_eq_iSup`: when the supremum of the level cardinalities is infinite, the cardinality of a countable direct limit equals that supremum; `directLimit_card_lt_continuum` then shows that countable chains below the continuum remain below it.
+
+Required boundary statement:
+
+> The elementary-chain fields of `icahElementary` and `icahTheorem` are witnessed by constant chains. The separately constructed cofinal monotone family of real-closed subfields is nonconstant but is not proved elementary. The `cf(𝔠)` optimality statement concerns covering subsets and the real-closed-subfield upper bound, not elementary strata.
 
 Writing constraints:
 
@@ -23,7 +27,7 @@ Writing constraints:
 - Avoid metaphors unless immediately formalized.
 - Every claim about the repository must cite a Lean declaration.
 - Every claim about CH, real closed fields, p-adic fields, or Mathlib must cite a source.
-- Treat `not_CH` as an explicit external assumption, not as a defect.
+- Treat `NotCH` as an explicit external assumption, not as a defect.
 - Keep p-adic and valued-field analogies in future work.
 
 Next concrete task:
